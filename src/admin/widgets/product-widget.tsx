@@ -8,9 +8,7 @@ type WishlistResponse = {
   count: number;
 };
 
-export const ProductWidget = ({
-  data: product,
-}: DetailWidgetProps<AdminProduct>) => {
+const ProductWidget = ({ data: product }: DetailWidgetProps<AdminProduct>) => {
   const { data, isLoading } = useQuery<WishlistResponse>({
     queryFn: () => sdk.client.fetch(`/admin/products/${product.id}/wishlist`),
     queryKey: [["products", product.id, "wishlist"]],
@@ -22,9 +20,7 @@ export const ProductWidget = ({
         <Heading level="h2">Wishlist</Heading>
       </div>
       <Text className="px-6 py-4">
-        {isLoading
-          ? "Loading..."
-          : `This product is in ${data?.count} wishlist(s).`}
+        {isLoading ? "Loading..." : `This product is in ${data?.count || 0} wishlist(s).`}
       </Text>
     </Container>
   );
@@ -33,3 +29,5 @@ export const ProductWidget = ({
 export const config = defineWidgetConfig({
   zone: "product.details.before",
 });
+
+export default ProductWidget;
