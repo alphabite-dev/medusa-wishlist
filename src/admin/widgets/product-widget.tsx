@@ -8,7 +8,9 @@ type WishlistResponse = {
   count: number;
 };
 
-const ProductWidget = ({ data: product }: DetailWidgetProps<AdminProduct>) => {
+export const ProductWidget = ({
+  data: product,
+}: DetailWidgetProps<AdminProduct>) => {
   const { data, isLoading } = useQuery<WishlistResponse>({
     queryFn: () => sdk.client.fetch(`/admin/products/${product.id}/wishlist`),
     queryKey: [["products", product.id, "wishlist"]],
@@ -31,5 +33,3 @@ const ProductWidget = ({ data: product }: DetailWidgetProps<AdminProduct>) => {
 export const config = defineWidgetConfig({
   zone: "product.details.before",
 });
-
-export default ProductWidget;
