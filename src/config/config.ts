@@ -9,22 +9,33 @@ type WishlistEndpoints = {
 // Plugin definition
 type Plugin<Name extends string, Endpoints> = {
   name: Name;
-  endpoints: (client: Client) => Endpoints;
+  endpoints: (client: Client, options?: AlphabiteClientOptions) => Endpoints;
 };
 
 export const wishlistPlugin: Plugin<"wishlist", WishlistEndpoints> = {
   name: "wishlist" as const,
-  endpoints: (client: Client) => ({
+  endpoints: (client: Client, options?: AlphabiteClientOptions) => ({
     list: async () =>
-      client.fetch("/store/customers/me/wishlists", { method: "GET" }),
+      client.fetch("/store/customers/me/wishlists", {
+        method: "GET",
+        headers: { ...(await options?.getAuthHeader?.()) },
+      }),
     add: async (productId: string) =>
       client.fetch("/store/customers/me/wishlists/items", {
         method: "POST",
         body: JSON.stringify({ product_id: productId }),
+        headers: { ...(await options?.getAuthHeader?.()) },
       }),
     remove: async (productId: string) =>
       client.fetch(`/store/customers/me/wishlists/items/${productId}`, {
         method: "DELETE",
+        headers: { ...(await options?.getAuthHeader?.()) },
       }),
   }),
+};
+
+export type AlphabiteClientOptions = {
+  getAuthHeader?: () =>
+    | Promise<Record<string, string>>
+    | Record<string, string>;
 };
