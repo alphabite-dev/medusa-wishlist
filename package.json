@@ -1,8 +1,8 @@
 {
   "name": "@alphabite/medusa-wishlist",
-  "version": "0.0.1",
-  "description": "A starter for Medusa plugins.",
-  "author": "Medusa (https://medusajs.com)",
+  "version": "0.0.2",
+  "description": "Alphabite's Medusa Wishlist Plugin",
+  "author": "Alphabite (https://alphabite.io)",
   "license": "MIT",
   "files": [
     ".medusa/server"
@@ -23,9 +23,12 @@
   "keywords": [
     "medusa",
     "plugin",
-    "medusa-plugin-other",
     "medusa-plugin",
-    "medusa-v2"
+    "medusa-plugin-other",
+    "medusa-v2",
+    "medusa-alphabite",
+    "medusa-alphabite-plugin",
+    "medusa-alphabite-wishlist-plugin"
   ],
   "scripts": {
     "build": "medusa plugin:build",
