@@ -4,7 +4,8 @@ import { WishlistItem } from "./wishlist-item";
 export const Wishlist = model
   .define("wishlist", {
     id: model.id().primaryKey(),
-    customer_id: model.text(),
+    name: model.text().nullable(),
+    customer_id: model.text().nullable(),
     sales_channel_id: model.text(),
     items: model.hasMany(() => WishlistItem),
   })
@@ -12,5 +13,6 @@ export const Wishlist = model
     {
       on: ["customer_id", "sales_channel_id"],
       unique: true,
+      where: { customer_id: { $ne: null } },
     },
   ]);

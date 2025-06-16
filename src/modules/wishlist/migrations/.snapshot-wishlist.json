@@ -15,13 +15,22 @@
           "nullable": false,
           "mappedType": "text"
         },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "text"
+        },
         "customer_id": {
           "name": "customer_id",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
-          "nullable": false,
+          "nullable": true,
           "mappedType": "text"
         },
         "sales_channel_id": {
@@ -85,7 +94,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_wishlist_customer_id_sales_channel_id_unique\" ON \"wishlist\" (customer_id, sales_channel_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_wishlist_customer_id_sales_channel_id_unique\" ON \"wishlist\" (customer_id, sales_channel_id) WHERE customer_id IS NOT NULL AND deleted_at IS NULL"
         },
         {
           "keyName": "wishlist_pkey",
