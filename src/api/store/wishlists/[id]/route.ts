@@ -1,17 +1,18 @@
-import { MedusaRequest, MedusaResponse } from "@medusajs/framework";
+import { AuthenticatedMedusaRequest, MedusaRequest, MedusaResponse } from "@medusajs/framework";
+import { MedusaError, MedusaErrorTypes } from "@medusajs/framework/utils";
 import WishlistModuleService from "../../../../modules/wishlist/service";
-import { UpdateWishlistInputSchema } from "../validatiors";
-import { Wishlist, WishlistErrorOutput } from "../types";
+import { UpdateWishlistInput } from "../validators";
+import { Wishlist } from "../types";
+import { WISHLIST_MODULE } from "../../../../modules/wishlist";
 
 //-----Retrieves a specific wishlist by ID-----//
-export async function GET(
-  req: MedusaRequest,
-  res: MedusaResponse<Wishlist | WishlistErrorOutput>
-) {
-  const query = req.scope.resolve("query");
+export async function GET(req: AuthenticatedMedusaRequest, res: MedusaResponse<Wishlist>) {
   const { id } = req.params;
+  const customer_id = req?.auth_context?.actor_id;
 
   try {
+    const query = req.scope.resolve("query");
+
     const { data } = await query.graph({
       entity: "wishlist",
       filters: {
@@ -20,42 +21,41 @@ export async function GET(
       fields: ["*", ...(req.queryConfig.fields || [])],
     });
 
-    console.log("Fetched wishlist:", data[0]);
+    const wishlist = data?.[0];
 
-    res.status(200).json(data[0]);
+    if (!wishlist) {
+      throw new MedusaError(MedusaErrorTypes.NOT_FOUND, `Wishlist with ID ${id} not found`);
+    }
+
+    if (wishlist?.customer_id && wishlist?.customer_id !== customer_id) {
+      throw new MedusaError(MedusaErrorTypes.UNAUTHORIZED, "You are not authorized to access this wishlist");
+    }
+
+    return res.status(200).json(wishlist);
   } catch (error) {
     console.log("Error fetching wishlists:", error);
 
-    res.status(500).json({ message: "Wishlist not found" });
+    return res.status(500).end();
   }
 }
 
-//-----Update a specific wishlist by ID-----//
-type UpdateWishlistInput = Zod.infer<typeof UpdateWishlistInputSchema>;
-
-export async function PUT(
-  req: MedusaRequest<UpdateWishlistInput>,
-  res: MedusaResponse<Omit<Wishlist, "items"> | WishlistErrorOutput>
-) {
+export async function PUT(req: MedusaRequest<UpdateWishlistInput>, res: MedusaResponse<Omit<Wishlist, "items">>) {
   const input = req.body;
   const { id } = req.params;
 
-  const wishlistService = req.scope.resolve(
-    "wishlist"
-  ) as WishlistModuleService;
-
   try {
-    //Return only the updated entity
+    const wishlistService = req.scope.resolve<WishlistModuleService>(WISHLIST_MODULE);
+
     const updated_wishlist = await wishlistService.updateWishlists({
       id,
       ...input,
     });
 
-    res.status(200).json(updated_wishlist);
+    return res.status(200).json(updated_wishlist);
   } catch (error) {
     console.log("Transfer wishlists failed:", error);
 
-    res.status(500).json();
+    return res.status(500).end();
   }
 }
 
@@ -64,25 +64,20 @@ export interface DeleteWishlistOutput {
   id: string;
 }
 
-export async function DELETE(
-  req: MedusaRequest,
-  res: MedusaResponse<DeleteWishlistOutput>
-) {
+export async function DELETE(req: MedusaRequest, res: MedusaResponse<DeleteWishlistOutput>) {
   const { id } = req.params;
-  const wishlistService = req.scope.resolve(
-    "wishlist"
-  ) as WishlistModuleService;
 
   try {
-    const response = await wishlistService.softDeleteWishlists({ id });
-    console.log("Delete  wishlist response:", response);
+    const wishlistService = req.scope.resolve<WishlistModuleService>(WISHLIST_MODULE);
 
-    res.status(200).json({
+    const response = await wishlistService.softDeleteWishlists({ id });
+
+    return res.status(200).json({
       id,
     });
   } catch (error) {
     console.log("Wishlist deleting failed.", error);
 
-    res.status(500);
+    return res.status(500).end();
   }
 }

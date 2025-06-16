@@ -88,13 +88,13 @@
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_wishlist_deleted_at\" ON \"wishlist\" (deleted_at) WHERE deleted_at IS NULL"
         },
         {
-          "keyName": "IDX_wishlist_customer_id_sales_channel_id_unique",
+          "keyName": "IDX_wishlist_customer_id_sales_channel_id",
           "columnNames": [],
           "composite": false,
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_wishlist_customer_id_sales_channel_id_unique\" ON \"wishlist\" (customer_id, sales_channel_id) WHERE customer_id IS NOT NULL AND deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_wishlist_customer_id_sales_channel_id\" ON \"wishlist\" (customer_id, sales_channel_id) WHERE customer_id IS NOT NULL AND deleted_at IS NULL"
         },
         {
           "keyName": "wishlist_pkey",
@@ -122,8 +122,8 @@
           "nullable": false,
           "mappedType": "text"
         },
-        "product_id": {
-          "name": "product_id",
+        "product_variant_id": {
+          "name": "product_variant_id",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
@@ -195,13 +195,13 @@
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_wishlist_item_deleted_at\" ON \"wishlist_item\" (deleted_at) WHERE deleted_at IS NULL"
         },
         {
-          "keyName": "IDX_wishlist_item_product_id_wishlist_id_unique",
+          "keyName": "IDX_wishlist_item_product_variant_id_wishlist_id_unique",
           "columnNames": [],
           "composite": false,
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_wishlist_item_product_id_wishlist_id_unique\" ON \"wishlist_item\" (product_id, wishlist_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_wishlist_item_product_variant_id_wishlist_id_unique\" ON \"wishlist_item\" (product_variant_id, wishlist_id) WHERE deleted_at IS NULL"
         },
         {
           "keyName": "wishlist_item_pkey",
