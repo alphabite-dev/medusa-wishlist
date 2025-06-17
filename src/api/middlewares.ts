@@ -25,7 +25,7 @@ export default defineMiddlewares({
             "items.product_variant.*",
             "items.product_variant.prices.*",
             "items.product_variant.product.thumbnail",
-            "items.product_variant.product.*",
+            "items.product_variant.product.id",
           ],
           isList: true,
         }),
