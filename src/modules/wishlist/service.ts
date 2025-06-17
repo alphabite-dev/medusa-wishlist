@@ -11,6 +11,8 @@ import { EntityManager } from "@mikro-orm/knex";
 
 type Options = {
   fields?: string[];
+  includeWishlistItems?: boolean;
+  // includeWishlistItemsTake?: number;
 };
 
 export default class WishlistModuleService extends MedusaService({

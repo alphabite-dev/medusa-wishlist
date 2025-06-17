@@ -26,8 +26,9 @@ export async function GET(
       ...req.queryConfig,
       fields: [
         "*",
-        ...(req.queryConfig.fields || []),
+        // ...(req.queryConfig.fields || []),
         ...(options?.fields || []),
+        ...(options.includeWishlistItems ? req.queryConfig.fields : []),
       ],
     });
 
