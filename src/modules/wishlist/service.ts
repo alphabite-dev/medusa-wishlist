@@ -1,14 +1,45 @@
-import { MedusaContext, MedusaService } from "@medusajs/framework/utils";
+import {
+  MedusaContext,
+  MedusaError,
+  MedusaService,
+} from "@medusajs/framework/utils";
 import { Wishlist } from "./models/wishlist";
 import { WishlistItem } from "./models/wishlist-item";
 import { InjectManager } from "@medusajs/framework/utils";
 import { Context } from "@medusajs/framework/types";
 import { EntityManager } from "@mikro-orm/knex";
 
+type Options = {
+  fields?: string[];
+};
+
 export default class WishlistModuleService extends MedusaService({
   Wishlist,
   WishlistItem,
 }) {
+  public _options: Options;
+
+  static validateOptions(_options: Record<any, any>): void | never {
+    if (_options.fields) {
+      if (
+        !Array.isArray(
+          _options.fields ||
+            _options.fields.every((item) => typeof item === "string")
+        )
+      ) {
+        throw new MedusaError(
+          MedusaError.Types.INVALID_DATA,
+          "Missing required options for DigitalOcean Storage"
+        );
+      }
+    }
+  }
+
+  constructor({}, options: Options) {
+    super(...arguments);
+    this._options = options || {};
+  }
+
   @InjectManager()
   async getWishlistCountsOfProduct(
     productId: string,

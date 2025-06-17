@@ -5,7 +5,10 @@ import {
   validateAndTransformQuery,
 } from "@medusajs/framework/http";
 import { createFindParams } from "@medusajs/medusa/api/utils/validators";
-import { CreateWishlistInputSchema, UpdateWishlistInputSchema } from "./store/wishlists/validators";
+import {
+  CreateWishlistInputSchema,
+  UpdateWishlistInputSchema,
+} from "./store/wishlists/validators";
 import { AddItemToWishlistInputSchema } from "./store/wishlists/[id]/add-item/validators";
 
 export default defineMiddlewares({
@@ -22,6 +25,7 @@ export default defineMiddlewares({
             "items.product_variant.*",
             "items.product_variant.prices.*",
             "items.product_variant.product.thumbnail",
+            "items.product_variant.product.*",
           ],
           isList: true,
         }),
@@ -42,6 +46,7 @@ export default defineMiddlewares({
             "items.product_variant.*",
             "items.product_variant.prices.*",
             "items.product_variant.product.thumbnail",
+            "items.product_variant.product.id",
           ],
         }),
       ],
@@ -62,7 +67,10 @@ export default defineMiddlewares({
     {
       matcher: "/store/wishlists/:id",
       methods: ["PUT"],
-      middlewares: [authenticate("customer", ["bearer"]), validateAndTransformBody(UpdateWishlistInputSchema)],
+      middlewares: [
+        authenticate("customer", ["bearer"]),
+        validateAndTransformBody(UpdateWishlistInputSchema),
+      ],
     },
     //----Delete wishlist-----//
     {
@@ -124,6 +132,7 @@ export default defineMiddlewares({
             "product_variant.prices.*",
             "product_variant.calculated_price",
             "product_variant.product.thumbnail",
+            "product_variant.product.id",
           ],
         }),
       ],

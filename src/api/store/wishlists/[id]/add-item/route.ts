@@ -1,4 +1,7 @@
-import { AuthenticatedMedusaRequest, MedusaResponse } from "@medusajs/framework";
+import {
+  AuthenticatedMedusaRequest,
+  MedusaResponse,
+} from "@medusajs/framework";
 import WishlistModuleService from "../../../../../modules/wishlist/service";
 import { WishlistItem } from "../../types";
 import { WISHLIST_MODULE } from "../../../../../modules/wishlist";
@@ -12,8 +15,10 @@ export const POST = async (
   const { id } = req.params;
 
   try {
-    const wishlistService = req.scope.resolve<WishlistModuleService>(WISHLIST_MODULE);
+    const wishlistService =
+      req.scope.resolve<WishlistModuleService>(WISHLIST_MODULE);
     const query = req.scope.resolve("query");
+    const options = wishlistService._options;
 
     const created_item = await wishlistService.createWishlistItems({
       product_variant_id,
@@ -26,7 +31,7 @@ export const POST = async (
         id: created_item.id,
       },
       ...req.queryConfig,
-      fields: req.queryConfig?.fields || [],
+      fields: [...(req.queryConfig.fields || []), ...(options?.fields || [])],
     });
 
     return res.status(201).json(enriched_wishlist_item[0]);

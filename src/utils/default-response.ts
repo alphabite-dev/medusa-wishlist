@@ -5,5 +5,8 @@ export const defaultResponse: PaginatedOutput<any> = {
   count: 0,
   skip: 0,
   take: 0,
-  totalPages: 0,
+  totalPages: 1,
+  currentPage: 1,
+  nextPage: 1,
+  prevPage: 1,
 };

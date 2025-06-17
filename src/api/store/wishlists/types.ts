@@ -1,6 +1,12 @@
-import { PriceDTO, ProductDTO, ProductVariantDTO, RemoteQueryFunctionReturnPagination } from "@medusajs/types";
+import {
+  PriceDTO,
+  ProductDTO,
+  ProductVariantDTO,
+  RemoteQueryFunctionReturnPagination,
+} from "@medusajs/types";
 
-export interface PaginatedOutputMeta extends RemoteQueryFunctionReturnPagination {
+export interface PaginatedOutputMeta
+  extends RemoteQueryFunctionReturnPagination {
   totalPages: number;
   currentPage: number;
   nextPage: number;
@@ -13,13 +19,16 @@ export interface PaginatedOutput<T> extends PaginatedOutputMeta {
 
 export interface WishlistItem {
   id: string;
-  product_id: string;
+  product_variant_id: string;
   wishlist_id: string;
   created_at: string;
   updated_at: string;
   deleted_at: string | null;
   product_variant:
-    | (Omit<ProductVariantDTO, "product"> & { product: Pick<ProductDTO, "id" | "thumbnail">; prices: PriceDTO[] })
+    | (Omit<ProductVariantDTO, "product"> & {
+        product: Pick<ProductDTO, "id" | "thumbnail">;
+        prices: PriceDTO[];
+      })
     | null;
 }
 
