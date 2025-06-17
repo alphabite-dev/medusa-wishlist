@@ -12,7 +12,7 @@ export const GET = async (
   res: MedusaResponse<PaginatedOutput<WishlistItem>>
 ) => {
   const { id } = req.params;
-  const customer_id = req?.auth_context?.actor_id;
+  // const customer_id = req?.auth_context?.actor_id;
 
   try {
     const query = req.scope.resolve("query");
@@ -24,7 +24,7 @@ export const GET = async (
       entity: "wishlist_item",
       filters: {
         wishlist_id: id,
-        ...(customer_id && { customer_id }),
+        // ...(customer_id && { customer_id }), //Items don't have customer_id, so this is commented out
       },
       ...req.queryConfig,
       fields: [...(req.queryConfig.fields || []), ...(options?.fields || [])],
