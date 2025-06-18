@@ -1,64 +1,101 @@
-<p align="center">
-  <a href="https://www.medusajs.com">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://user-images.githubusercontent.com/59018053/229103275-b5e482bb-4601-46e6-8142-244f531cebdb.svg">
-    <source media="(prefers-color-scheme: light)" srcset="https://user-images.githubusercontent.com/59018053/229103726-e5b529a3-9b3f-4970-8a1f-c6af37f087bf.svg">
-    <img alt="Medusa logo" src="https://user-images.githubusercontent.com/59018053/229103726-e5b529a3-9b3f-4970-8a1f-c6af37f087bf.svg">
-    </picture>
-  </a>
-</p>
-<h1 align="center">
-  Medusa Plugin Starter
-</h1>
+# 🧞‍♂️ Wishlist Plugin for Medusa
 
-<h4 align="center">
-  <a href="https://docs.medusajs.com">Documentation</a> |
-  <a href="https://www.medusajs.com">Website</a>
-</h4>
+The **Alphabite Wishlist Plugin** is the most feature-rich wishlist system built for [MedusaJS](https://medusajs.com). It supports both authenticated and guest users, allowing seamless wishlist creation, management, and transfer across sessions and logins.
 
-<p align="center">
-  Building blocks for digital commerce
-</p>
-<p align="center">
-  <a href="https://github.com/medusajs/medusa/blob/master/CONTRIBUTING.md">
-    <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat" alt="PRs welcome!" />
-  </a>
-    <a href="https://www.producthunt.com/posts/medusa"><img src="https://img.shields.io/badge/Product%20Hunt-%231%20Product%20of%20the%20Day-%23DA552E" alt="Product Hunt"></a>
-  <a href="https://discord.gg/xpCwq3Kfn8">
-    <img src="https://img.shields.io/badge/chat-on%20discord-7289DA.svg" alt="Discord Chat" />
-  </a>
-  <a href="https://twitter.com/intent/follow?screen_name=medusajs">
-    <img src="https://img.shields.io/twitter/follow/medusajs.svg?label=Follow%20@medusajs" alt="Follow @medusajs" />
-  </a>
-</p>
+This plugin includes a **fully typed SDK client** and a **Postman collection** for fast integration and testing.
 
-## Compatibility
+---
 
-This starter is compatible with versions >= 2.4.0 of `@medusajs/medusa`. 
+## ✨ Features
 
-## Getting Started
+- ✅ Create, update, delete, and retrieve wishlists  
+- ✅ Add and remove items (product variants)  
+- ✅ Paginated listing of wishlists and their items  
+- ✅ Guest wishlist support
+- ✅ Transfer wishlist (e.g. guest → logged-in customer)  
+- ✅ Fully typed client integration with `@alphabite/medusa-client`  
+- ✅ Postman collection for all routes  
 
-Visit the [Quickstart Guide](https://docs.medusajs.com/learn/installation) to set up a server.
+---
 
-Visit the [Plugins documentation](https://docs.medusajs.com/learn/fundamentals/plugins) to learn more about plugins and how to create them.
+## 📦 API Endpoints
 
-Visit the [Docs](https://docs.medusajs.com/learn/installation#get-started) to learn more about our system requirements.
+All endpoints are exposed under the `/store/wishlists` path.
 
-## What is Medusa
+| Method | Endpoint                             | Description                          |
+|--------|--------------------------------------|--------------------------------------|
+| GET    | `/store/wishlists`                   | List customer wishlists              |
+| POST   | `/store/wishlists`                   | Create a new wishlist                |
+| GET    | `/store/wishlists/:id`               | Retrieve a specific wishlist         |
+| PUT    | `/store/wishlists/:id`               | Update wishlist (e.g. name)          |
+| DELETE | `/store/wishlists/:id`               | Delete a wishlist                    |
+| GET    | `/store/wishlists/:id/items`         | List wishlist items                  |
+| POST   | `/store/wishlists/:id/items`         | Add an item to a wishlist            |
+| DELETE | `/store/wishlists/:id/items/:item_id`    | Remove an item from a wishlist       |
+| POST   | `/store/wishlists/:id/transfer`      | Transfer wishlist (guest to user)    |
 
-Medusa is a set of commerce modules and tools that allow you to build rich, reliable, and performant commerce applications without reinventing core commerce logic. The modules can be customized and used to build advanced ecommerce stores, marketplaces, or any product that needs foundational commerce primitives. All modules are open-source and freely available on npm.
+---
 
-Learn more about [Medusa’s architecture](https://docs.medusajs.com/learn/introduction/architecture) and [commerce modules](https://docs.medusajs.com/learn/fundamentals/modules/commerce-modules) in the Docs.
+## 🧑‍💻 SDK Client
 
-## Community & Contributions
+We provide a plug-and-play client plugin for `@medusajs/js-sdk`.
 
-The community and core team are available in [GitHub Discussions](https://github.com/medusajs/medusa/discussions), where you can ask for support, discuss roadmap, and share ideas.
+```ts
+import Medusa from "@medusajs/js-sdk"
+import { wishlistPlugin } from "alphabite-sdk"
 
-Join our [Discord server](https://discord.com/invite/medusajs) to meet other community members.
+const medusa = new Medusa({
+  baseUrl: "https://your-medusa-url.com",
+  plugins: [wishlistPlugin],
+})
 
-## Other channels
+// Create a wishlist
+await medusa.alphabite.wishlist.create({ name: "My Sneakers" })
 
-- [GitHub Issues](https://github.com/medusajs/medusa/issues)
-- [Twitter](https://twitter.com/medusajs)
-- [LinkedIn](https://www.linkedin.com/company/medusajs)
-- [Medusa Blog](https://medusajs.com/blog/)
+// Add product to wishlist
+await medusa.alphabite.wishlist.addItem({
+  id: "wishlist_id",
+  product_id: "prod_variant_id"
+})
+```
+
+---
+
+## 🔌 TypeScript Support
+
+Includes full typings for:
+
+- `Wishlist`, `WishlistItem`
+- `CreateWishlistInput`, `ListWishlistsOutput`
+- `AddItemToWishlistInput`, `RemoveItemFromWishlistInput`
+- `TransferWishlistInput`, `PaginatedInput`, `PaginatedOutput`
+
+---
+
+## 📭 Postman Collection
+
+A full Postman collection is available for testing all supported endpoints.
+
+🗂️ **Location**: `docs/postman/WishlistPlugin.postman_collection.json`
+
+---
+
+## 🛠 Planned Features
+
+- [ ] Guest wishlist (ID saved in cookie)
+- [ ] Admin dashboard integration
+- [ ] Product recommendation support
+
+---
+
+## 🧩 Requirements
+
+- MedusaJS v2+
+- Redis (optional, for guest wishlist caching)
+- Customer authentication enabled
+
+---
+
+## 🤝 Contributing
+
+We welcome issues, feedback, and PRs. Let us know how we can improve!
