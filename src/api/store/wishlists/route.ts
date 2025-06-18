@@ -26,14 +26,43 @@ export async function GET(
       ...req.queryConfig,
       fields: [
         "*",
-        // ...(req.queryConfig.fields || []),
         ...(options?.fields || []),
         ...(options.includeWishlistItems ? req.queryConfig.fields : []),
       ],
     });
 
+    const enriched_wishlist = await Promise.all(
+      data.map(async (wishlist) => {
+        const { data: items } = await query.graph({
+          entity: "wishlist_item",
+          filters: { wishlist_id: wishlist.id },
+          fields: [
+            "id",
+            "product_id",
+            "wishlist_id",
+            "created_at",
+            "updated_at",
+            "deleted_at",
+            "product_variant.*",
+            "product_variant.prices.*",
+            "product_variant.calculated_price",
+            "product_variant.product.thumbnail",
+          ],
+          pagination: {
+            take: options?.includeWishlistItemsTake || 5,
+            skip: 0,
+          },
+        });
+
+        return {
+          ...wishlist,
+          items: items.length > 0 ? items : [],
+        };
+      })
+    );
+
     return res.status(200).json({
-      data,
+      data: enriched_wishlist,
       take: metadata?.take || 5,
       skip: metadata?.skip || 0,
       ...getPagination(metadata!),

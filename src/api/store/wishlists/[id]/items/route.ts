@@ -6,13 +6,14 @@ import { PaginatedOutput, WishlistItem } from "../../types";
 import { getPagination } from "../../../../../utils/utils";
 import WishlistModuleService from "../../../../../modules/wishlist/service";
 import { WISHLIST_MODULE } from "../../../../../modules/wishlist";
+import { MedusaError, MedusaErrorTypes } from "@medusajs/framework/utils";
 
 export const GET = async (
   req: AuthenticatedMedusaRequest,
   res: MedusaResponse<PaginatedOutput<WishlistItem>>
 ) => {
   const { id } = req.params;
-  // const customer_id = req?.auth_context?.actor_id;
+  const customer_id = req?.auth_context?.actor_id;
 
   try {
     const query = req.scope.resolve("query");
@@ -24,11 +25,17 @@ export const GET = async (
       entity: "wishlist_item",
       filters: {
         wishlist_id: id,
-        // ...(customer_id && { customer_id }), //Items don't have customer_id, so this is commented out
       },
       ...req.queryConfig,
       fields: [...(req.queryConfig.fields || []), ...(options?.fields || [])],
     });
+
+    if (customer_id && wishlist_items[0].wishlist.customer_id !== customer_id) {
+      throw new MedusaError(
+        MedusaErrorTypes.UNAUTHORIZED,
+        "You are not authorized to access this wishlist items"
+      );
+    }
 
     return res.status(200).json({
       data: wishlist_items,

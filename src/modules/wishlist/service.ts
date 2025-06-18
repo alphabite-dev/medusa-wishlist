@@ -12,7 +12,7 @@ import { EntityManager } from "@mikro-orm/knex";
 type Options = {
   fields?: string[];
   includeWishlistItems?: boolean;
-  // includeWishlistItemsTake?: number;
+  includeWishlistItemsTake?: number;
 };
 
 export default class WishlistModuleService extends MedusaService({

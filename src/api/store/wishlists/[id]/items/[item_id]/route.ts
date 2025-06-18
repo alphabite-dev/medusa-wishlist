@@ -1,21 +1,56 @@
-import { MedusaRequest, MedusaResponse } from "@medusajs/framework";
+import {
+  AuthenticatedMedusaRequest,
+  MedusaRequest,
+  MedusaResponse,
+} from "@medusajs/framework";
 import WishlistModuleService from "../../../../../../modules/wishlist/service";
 import { WISHLIST_MODULE } from "../../../../../../modules/wishlist";
+import { MedusaError } from "@medusajs/framework/utils";
 
 //-----Delete item from wishlist-----//
 export interface DeleteWishlistItemOutput {
   id: string;
 }
 
-export const DELETE = async (req: MedusaRequest, res: MedusaResponse<DeleteWishlistItemOutput>) => {
-  const { item_id: id } = req.params;
-  const wishlistService = req.scope.resolve<WishlistModuleService>(WISHLIST_MODULE);
+export const DELETE = async (
+  req: AuthenticatedMedusaRequest,
+  res: MedusaResponse<DeleteWishlistItemOutput>
+) => {
+  const { item_id, id: wishlist_id } = req.params;
+  const wishlistService =
+    req.scope.resolve<WishlistModuleService>(WISHLIST_MODULE);
+  const query = req.scope.resolve("query");
+  const customer_id = req?.auth_context?.actor_id;
 
   try {
-    //Remove item from wishlist
-    await wishlistService.deleteWishlistItems(id);
+    const { data: wishlist } = await query.graph({
+      entity: "wishlist",
+      filters: { id: wishlist_id },
+      fields: ["id", "customer_id"],
+    });
 
-    return res.status(200).json({ id });
+    if (wishlist[0]?.customer_id && !customer_id) {
+      throw new MedusaError(
+        MedusaError.Types.UNAUTHORIZED,
+        "You are not authorized to remove items from this wishlist"
+      );
+    }
+
+    if (
+      customer_id &&
+      wishlist[0]?.customer_id &&
+      wishlist[0]?.customer_id !== customer_id
+    ) {
+      throw new MedusaError(
+        MedusaError.Types.UNAUTHORIZED,
+        "You are not authorized to remove items from this wishlist"
+      );
+    }
+
+    //Remove item from wishlist
+    await wishlistService.deleteWishlistItems(item_id);
+
+    return res.status(200).json({ id: item_id });
   } catch (error) {
     console.log("Error fetching wishlists:", error);
 
