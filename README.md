@@ -98,7 +98,7 @@ All endpoints are available under `/store/wishlists`.
 ```ts
 import { AlphabiteMedusaClient, wishlistPlugin } from '@alphabite/sdk'
 
-const medusa = new AlphabiteMedusaClient({
+const sdk = new AlphabiteMedusaClient({
   {
     baseUrl,
     debug: process.env.NODE_ENV === "development",
@@ -111,16 +111,16 @@ const medusa = new AlphabiteMedusaClient({
 })
 
 // Create wishlist
-await medusa.alphabite.wishlist.create({ name: 'My Sneakers' })
+await sdk.alphabite.wishlist.create({ name: 'My Sneakers' })
 
 // Add item
-await medusa.alphabite.wishlist.addItem({
+await sdk.alphabite.wishlist.addItem({
   id: 'wishlist_id',
   product_variant_id: 'variant_id',
 })
 
 // List items
-const { data } = await medusa.alphabite.wishlist.listItems({ id: 'wishlist_id' })
+const { data } = await sdk.alphabite.wishlist.listItems({ id: 'wishlist_id' })
 ```
 
 
