@@ -27,11 +27,9 @@ This plugin ships with:
 
 - ✅ Multiple wishlists per customer  
 - ✅ Add/remove items to/from any wishlist  
-- ✅ Transfer guest wishlist to customer upon login  
-- ✅ Authenticated & optionally-authenticated endpoints  
-- ✅ Fully typed Medusa JS SDK integration  
+- ✅ Guest wishlist supported + transfer when registered 
+- ✅ Fully typed Medusa JS SDK integration with our SDK client 
 - ✅ Pagination and filtering built-in  
-- ✅ Optional eager loading of items/variants/prices  
 
 ---
 
@@ -65,15 +63,6 @@ const plugins = [
 
 ## 🔧 Plugin Options
 
-```ts
-const optionsSchema = z.object({
-  fields: z.array(z.string()).optional(),
-  includeWishlistItems: z.boolean().default(false),
-  includeWishlistItemsTake: z.number().default(5),
-  allowGuestWishlist: z.boolean().default(false),
-})
-```
-
 | Option                    | Type       | Default | Description                                                              |
 |---------------------------|------------|---------|--------------------------------------------------------------------------|
 | `wishlistFields`                 | `string[]` | `["items.*", "items.product_variant.*", "items.product_variant.prices.*", "items.product_variant.product.thumbnail", "items.product_variant.product.id"]`    | Selectively include Medusa product or product variant fields on wishlist list/retrieve endpoints that have wishlist items included             |
@@ -104,6 +93,8 @@ All endpoints are available under `/store/wishlists`.
 
 ## 🧑‍💻 SDK Usage
 
+❗❗❗[Read more about our Medusa compatible SDK here](https://github.com/alphabite-dev/medusa-client/tree/main)
+
 ```ts
 import { AlphabiteMedusaClient, wishlistPlugin } from '@alphabite/sdk'
 
@@ -131,6 +122,7 @@ await medusa.alphabite.wishlist.addItem({
 // List items
 const { data } = await medusa.alphabite.wishlist.listItems({ id: 'wishlist_id' })
 ```
+
 
 ---
 
