@@ -40,4 +40,5 @@ export interface Wishlist {
   updated_at: Date | string;
   deleted_at: Date | string | null;
   items: WishlistItem[];
+  items_count: number;
 }

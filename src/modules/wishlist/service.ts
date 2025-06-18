@@ -11,7 +11,8 @@ import { EntityManager } from "@mikro-orm/knex";
 import z from "zod";
 
 const optionsSchema = z.object({
-  fields: z.array(z.string()).optional(),
+  wishlistFields: z.array(z.string()).optional(),
+  wishlistItemsFields: z.array(z.string()).optional(),
   includeWishlistItems: z.boolean().default(false),
   includeWishlistItemsTake: z.number().default(5),
   allowGuestWishlist: z.boolean().default(false),
@@ -100,5 +101,27 @@ export default class WishlistModuleService extends MedusaService({
     }
 
     return wishlistItem[0].id;
+  }
+
+  @InjectManager()
+  async totalItemsCount(
+    customerId: string,
+    @MedusaContext() context: Context<EntityManager> = {}
+  ): Promise<number> {
+    interface CountResult {
+      total: string;
+    }
+
+    const rawResult = await context.manager
+      ?.createQueryBuilder("wishlist_item", "wi")
+      .select(["COUNT(wi.id) AS total"])
+      .leftJoin("wi.wishlist", "w")
+      .where({ "w.customer_id": customerId })
+      .andWhere({ "wi.deleted_at": null })
+      .execute<CountResult>();
+
+    console.log("Raw result from count query:", rawResult);
+
+    return Number(rawResult?.total || 0);
   }
 }

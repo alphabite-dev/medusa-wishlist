@@ -27,12 +27,12 @@ export async function GET(
       ...req.queryConfig,
       fields: [
         "*",
-        ...(options?.fields || []),
+        ...(options?.wishlistFields || []),
         ...(options.includeWishlistItems ? req.queryConfig.fields : []),
       ],
     });
 
-    const enriched_wishlist = await Promise.all(
+    const enriched_wishlist: Wishlist[] = await Promise.all(
       data.map(async (wishlist) => {
         const { data: items } = await query.graph({
           entity: "wishlist_item",
@@ -58,6 +58,7 @@ export async function GET(
         return {
           ...wishlist,
           items: items.length > 0 ? items : [],
+          items_count: items.length,
         };
       })
     );
@@ -79,7 +80,7 @@ export async function GET(
 
 export async function POST(
   req: AuthenticatedMedusaRequest<CreateWishlistInput>,
-  res: MedusaResponse
+  res: MedusaResponse<Wishlist>
 ) {
   const customer_id = req?.auth_context?.actor_id;
   const { ...input } = req.body;
@@ -101,7 +102,7 @@ export async function POST(
       ...(customer_id && { customer_id }),
     });
 
-    return res.status(201).json(wishlist);
+    return res.status(201).json({ ...wishlist, items_count: 0, items: [] });
   } catch (error) {
     return res.status(500).end();
   }

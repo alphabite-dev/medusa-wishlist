@@ -1,6 +1,5 @@
 import {
   AuthenticatedMedusaRequest,
-  MedusaRequest,
   MedusaResponse,
 } from "@medusajs/framework";
 import WishlistModuleService from "../../../../../../modules/wishlist/service";

@@ -40,7 +40,7 @@ export async function GET(
       fields: [
         "*",
         ...(req.queryConfig.fields || []),
-        ...(options?.fields || []),
+        ...(options?.wishlistFields || []),
       ],
     });
 
@@ -60,7 +60,9 @@ export async function GET(
       );
     }
 
-    return res.status(200).json(wishlist);
+    return res
+      .status(200)
+      .json({ ...wishlist, items_count: wishlist.items.length });
   } catch (error) {
     console.log("Error fetching wishlists:", error);
 
@@ -70,7 +72,7 @@ export async function GET(
 
 export async function PUT(
   req: MedusaRequest<UpdateWishlistInput>,
-  res: MedusaResponse<Omit<Wishlist, "items">>
+  res: MedusaResponse<Omit<Wishlist, "items" | "items_count">>
 ) {
   const input = req.body;
   const { id } = req.params;

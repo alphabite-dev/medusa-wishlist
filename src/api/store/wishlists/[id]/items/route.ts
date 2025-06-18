@@ -35,7 +35,10 @@ export const GET = async (
         wishlist_id: id,
       },
       ...req.queryConfig,
-      fields: [...(req.queryConfig.fields || []), ...(options?.fields || [])],
+      fields: [
+        ...(req.queryConfig.fields || []),
+        ...(options?.wishlistItemsFields || []),
+      ],
     });
 
     if (customer_id && wishlist_items[0].wishlist.customer_id !== customer_id) {

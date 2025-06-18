@@ -20,16 +20,16 @@ export default defineMiddlewares({
       middlewares: [
         authenticate("customer", ["bearer"]),
         validateAndTransformQuery(createFindParams(), {
-          defaults: [
-            // "items.*",
-            // "items.product_variant.*",
-            // "items.product_variant.prices.*",
-            // "items.product_variant.product.thumbnail",
-            // "items.product_variant.product.id",
-          ],
+          defaults: [],
           isList: true,
         }),
       ],
+    },
+    //----Total Items Count-----//
+    {
+      matcher: "/store/wishlists/total-items-count",
+      methods: ["GET"],
+      middlewares: [authenticate("customer", ["bearer"])],
     },
     //----Retrieve Wishlist-----//
     {

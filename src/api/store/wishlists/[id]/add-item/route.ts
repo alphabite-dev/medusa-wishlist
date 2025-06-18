@@ -54,7 +54,7 @@ export const POST = async (
       );
     }
 
-    console.log("wishlist", wishlist);
+    // console.log("wishlist", wishlist);
 
     const created_item = await wishlistService.createWishlistItems({
       product_variant_id,
@@ -67,7 +67,10 @@ export const POST = async (
         id: created_item.id,
       },
       ...req.queryConfig,
-      fields: [...(req.queryConfig.fields || []), ...(options?.fields || [])],
+      fields: [
+        ...(req.queryConfig.fields || []),
+        ...(options?.wishlistItemsFields || []),
+      ],
     });
 
     return res.status(201).json(enriched_wishlist_item[0]);
