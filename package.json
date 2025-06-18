@@ -7,6 +7,14 @@
   "files": [
     ".medusa/server"
   ],
+  "bugs": {
+    "url": "https://github.com/alphabite-dev/medusa-client/issues"
+  },
+  "homepage": "https://github.com/alphabite-dev/medusa-client#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/alphabite-dev/medusa-wishlist.git"
+  },
   "exports": {
     "./package.json": "./package.json",
     "./workflows": "./.medusa/server/src/workflows/index.js",
