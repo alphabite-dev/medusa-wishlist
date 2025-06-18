@@ -6,15 +6,28 @@ This plugin includes a **fully typed SDK client** and a **Postman collection** f
 
 ---
 
+## 📚 Table of Contents
+
+- [✨ Features](#-features)
+- [📦 API Endpoints](#-api-endpoints)
+- [🧑‍💻 SDK Client](#-sdk-client)
+- [🔌 TypeScript Support](#-typescript-support)
+- [📭 Postman Collection](#-postman-collection)
+- [🛠 Planned Features](#-planned-features)
+- [🧩 Requirements](#-requirements)
+- [🤝 Contributing](#-contributing)
+
+---
+
 ## ✨ Features
 
 - ✅ Create, update, delete, and retrieve wishlists  
 - ✅ Add and remove items (product variants)  
 - ✅ Paginated listing of wishlists and their items  
-- ✅ Guest wishlist support
 - ✅ Transfer wishlist (e.g. guest → logged-in customer)  
-- ✅ Fully typed client integration with `@alphabite/medusa-client`  
+- ✅ Fully typed client integration with `@medusajs/js-sdk`  
 - ✅ Postman collection for all routes  
+- 🧪 Guest wishlist support via cookies (coming soon)
 
 ---
 
@@ -31,7 +44,7 @@ All endpoints are exposed under the `/store/wishlists` path.
 | DELETE | `/store/wishlists/:id`               | Delete a wishlist                    |
 | GET    | `/store/wishlists/:id/items`         | List wishlist items                  |
 | POST   | `/store/wishlists/:id/items`         | Add an item to a wishlist            |
-| DELETE | `/store/wishlists/:id/items/:item_id`    | Remove an item from a wishlist       |
+| DELETE | `/store/wishlists/:id/items/:pid`    | Remove an item from a wishlist       |
 | POST   | `/store/wishlists/:id/transfer`      | Transfer wishlist (guest to user)    |
 
 ---
