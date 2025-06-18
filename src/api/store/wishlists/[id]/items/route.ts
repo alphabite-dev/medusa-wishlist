@@ -38,7 +38,9 @@ export const GET = async (
     }
 
     return res.status(200).json({
-      data: wishlist_items,
+      data: wishlist_items.map(
+        ({ wishlist, ...wishlist_item }) => wishlist_item
+      ),
       skip: metadata?.skip || 0,
       take: metadata?.take || 5,
       ...getPagination(metadata!),
