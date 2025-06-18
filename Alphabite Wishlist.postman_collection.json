@@ -1,0 +1,404 @@
+{
+	"info": {
+		"_postman_id": "bc01c901-30db-40c2-a8e4-78680976a09d",
+		"name": "Alphabite Wishlist",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27112910"
+	},
+	"item": [
+		{
+			"name": "List Wishlists",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6ImN1c18wMUpWMk1NMEQwRjRBWjg2V1I5UEdQRjQxTiIsImFjdG9yX3R5cGUiOiJjdXN0b21lciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFKVjJNS1paQzRNWjNBUFFUQ1hTN0ZGS1giLCJhcHBfbWV0YWRhdGEiOnsiY3VzdG9tZXJfaWQiOiJjdXNfMDFKVjJNTTBEMEY0QVo4NldSOVBHUEY0MU4ifSwiaWF0IjoxNzUwMTUyOTgxLCJleHAiOjE3NTAyMzkzODF9.MxY0OlfGr9b2N8sw-UQO10ZJ7GXkrEyOTOvSA60hNhc",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-publishable-api-key",
+						"value": "pk_63c43e09df793e35c79027870adc6d1d40e7003adcbe266ef9bf38cd2c4ba5d4",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6ImN1c18wMUpWMk1NMEQwRjRBWjg2V1I5UEdQRjQxTiIsImFjdG9yX3R5cGUiOiJjdXN0b21lciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFKVjJNS1paQzRNWjNBUFFUQ1hTN0ZGS1giLCJhcHBfbWV0YWRhdGEiOnsiY3VzdG9tZXJfaWQiOiJjdXNfMDFKVjJNTTBEMEY0QVo4NldSOVBHUEY0MU4ifSwiaWF0IjoxNzUwMTUyOTgxLCJleHAiOjE3NTAyMzkzODF9.MxY0OlfGr9b2N8sw-UQO10ZJ7GXkrEyOTOvSA60hNhc",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9000/store/wishlists?limit=5&offset=0&order=created_at",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"store",
+						"wishlists"
+					],
+					"query": [
+						{
+							"key": "limit",
+							"value": "5"
+						},
+						{
+							"key": "offset",
+							"value": "0"
+						},
+						{
+							"key": "order",
+							"value": "created_at"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retrieve Wishlist",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6ImN1c18wMUpWMk1NMEQwRjRBWjg2V1I5UEdQRjQxTiIsImFjdG9yX3R5cGUiOiJjdXN0b21lciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFKVjJNS1paQzRNWjNBUFFUQ1hTN0ZGS1giLCJhcHBfbWV0YWRhdGEiOnsiY3VzdG9tZXJfaWQiOiJjdXNfMDFKVjJNTTBEMEY0QVo4NldSOVBHUEY0MU4ifSwiaWF0IjoxNzUwMTUyOTgxLCJleHAiOjE3NTAyMzkzODF9.MxY0OlfGr9b2N8sw-UQO10ZJ7GXkrEyOTOvSA60hNhc",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "{{header_api_key}}",
+						"value": "{{api_key}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:9000/store/wishlists/wl_01JXWHFPGF0GN40B5H23XMQ8PS",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"store",
+						"wishlists",
+						"wl_01JXWHFPGF0GN40B5H23XMQ8PS"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Wishlist",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6ImN1c18wMUpWMk1NMEQwRjRBWjg2V1I5UEdQRjQxTiIsImFjdG9yX3R5cGUiOiJjdXN0b21lciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFKVjJNS1paQzRNWjNBUFFUQ1hTN0ZGS1giLCJhcHBfbWV0YWRhdGEiOnsiY3VzdG9tZXJfaWQiOiJjdXNfMDFKVjJNTTBEMEY0QVo4NldSOVBHUEY0MU4ifSwiaWF0IjoxNzUwMTUyOTgxLCJleHAiOjE3NTAyMzkzODF9.MxY0OlfGr9b2N8sw-UQO10ZJ7GXkrEyOTOvSA60hNhc",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "{{header_api_key}}",
+						"value": "{{api_key}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\":\"6.18 new wishlist\",\r\n    \"sales_channel_id\": \"sc_01JXAAWYNTN1J4H7VTZZJ2993N\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9000/store/wishlists",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"store",
+						"wishlists"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Transfer Wishlist",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6ImN1c18wMUpWMk1NMEQwRjRBWjg2V1I5UEdQRjQxTiIsImFjdG9yX3R5cGUiOiJjdXN0b21lciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFKVjJNS1paQzRNWjNBUFFUQ1hTN0ZGS1giLCJhcHBfbWV0YWRhdGEiOnsiY3VzdG9tZXJfaWQiOiJjdXNfMDFKVjJNTTBEMEY0QVo4NldSOVBHUEY0MU4ifSwiaWF0IjoxNzUwMTUyOTgxLCJleHAiOjE3NTAyMzkzODF9.MxY0OlfGr9b2N8sw-UQO10ZJ7GXkrEyOTOvSA60hNhc",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "{{header_api_key}}",
+						"value": "{{api_key}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:9000/store/wishlists/wl_01JY13H484SEGV79662HZNVBTX/transfer",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"store",
+						"wishlists",
+						"wl_01JY13H484SEGV79662HZNVBTX",
+						"transfer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Wishlist",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6ImN1c18wMUpWMk1NMEQwRjRBWjg2V1I5UEdQRjQxTiIsImFjdG9yX3R5cGUiOiJjdXN0b21lciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFKVjJNS1paQzRNWjNBUFFUQ1hTN0ZGS1giLCJhcHBfbWV0YWRhdGEiOnsiY3VzdG9tZXJfaWQiOiJjdXNfMDFKVjJNTTBEMEY0QVo4NldSOVBHUEY0MU4ifSwiaWF0IjoxNzUwMTUyOTgxLCJleHAiOjE3NTAyMzkzODF9.MxY0OlfGr9b2N8sw-UQO10ZJ7GXkrEyOTOvSA60hNhc",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "{{header_api_key}}",
+						"value": "{{api_key}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\":\"06/18/25 new wishlist\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9000/store/wishlists/wl_01JY13H484SEGV79662HZNVBTX",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"store",
+						"wishlists",
+						"wl_01JY13H484SEGV79662HZNVBTX"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List Wishlist Items",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "{{header_api_key}}",
+						"value": "{{api_key}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:9000/store/wishlists/wl_01JY153E125Q8BTWSWSBBWYG0E/items?limit=5&offset=0",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"store",
+						"wishlists",
+						"wl_01JY153E125Q8BTWSWSBBWYG0E",
+						"items"
+					],
+					"query": [
+						{
+							"key": "limit",
+							"value": "5"
+						},
+						{
+							"key": "offset",
+							"value": "0"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Item to Wishlist",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6ImN1c18wMUpWMk1NMEQwRjRBWjg2V1I5UEdQRjQxTiIsImFjdG9yX3R5cGUiOiJjdXN0b21lciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFKVjJNS1paQzRNWjNBUFFUQ1hTN0ZGS1giLCJhcHBfbWV0YWRhdGEiOnsiY3VzdG9tZXJfaWQiOiJjdXNfMDFKVjJNTTBEMEY0QVo4NldSOVBHUEY0MU4ifSwiaWF0IjoxNzUwMTUyOTgxLCJleHAiOjE3NTAyMzkzODF9.MxY0OlfGr9b2N8sw-UQO10ZJ7GXkrEyOTOvSA60hNhc",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "{{header_api_key}}",
+						"value": "{{api_key}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"product_variant_id\":\"variant_01JTN7MH4087SHVKBEA8FJ06ME\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9000/store/wishlists/wl_01JY153E125Q8BTWSWSBBWYG0E/add-item",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"store",
+						"wishlists",
+						"wl_01JY153E125Q8BTWSWSBBWYG0E",
+						"add-item"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Remove Item from Wishlist",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6ImN1c18wMUpWMk1NMEQwRjRBWjg2V1I5UEdQRjQxTiIsImFjdG9yX3R5cGUiOiJjdXN0b21lciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFKVjJNS1paQzRNWjNBUFFUQ1hTN0ZGS1giLCJhcHBfbWV0YWRhdGEiOnsiY3VzdG9tZXJfaWQiOiJjdXNfMDFKVjJNTTBEMEY0QVo4NldSOVBHUEY0MU4ifSwiaWF0IjoxNzUwMTUyOTgxLCJleHAiOjE3NTAyMzkzODF9.MxY0OlfGr9b2N8sw-UQO10ZJ7GXkrEyOTOvSA60hNhc",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "{{header_api_key}}",
+						"value": "{{api_key}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:9000/store/wishlists/wl_01JY153E125Q8BTWSWSBBWYG0E/items/wli_01JY1590R1B8YWA7K0CM484W5S",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"store",
+						"wishlists",
+						"wl_01JY153E125Q8BTWSWSBBWYG0E",
+						"items",
+						"wli_01JY1590R1B8YWA7K0CM484W5S"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Wishlist",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6ImN1c18wMUpWMk1NMEQwRjRBWjg2V1I5UEdQRjQxTiIsImFjdG9yX3R5cGUiOiJjdXN0b21lciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFKVjJNS1paQzRNWjNBUFFUQ1hTN0ZGS1giLCJhcHBfbWV0YWRhdGEiOnsiY3VzdG9tZXJfaWQiOiJjdXNfMDFKVjJNTTBEMEY0QVo4NldSOVBHUEY0MU4ifSwiaWF0IjoxNzUwMTUyOTgxLCJleHAiOjE3NTAyMzkzODF9.MxY0OlfGr9b2N8sw-UQO10ZJ7GXkrEyOTOvSA60hNhc",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "{{header_api_key}}",
+						"value": "{{api_key}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:9000/store/wishlists/wl_01JY13H484SEGV79662HZNVBTX",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"store",
+						"wishlists",
+						"wl_01JY13H484SEGV79662HZNVBTX"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
