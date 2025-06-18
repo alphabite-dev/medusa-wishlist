@@ -17,12 +17,22 @@ export const DELETE = async (
   res: MedusaResponse<DeleteWishlistItemOutput>
 ) => {
   const { item_id, id: wishlist_id } = req.params;
-  const wishlistService =
-    req.scope.resolve<WishlistModuleService>(WISHLIST_MODULE);
-  const query = req.scope.resolve("query");
   const customer_id = req?.auth_context?.actor_id;
 
+  const wishlistService =
+    req.scope.resolve<WishlistModuleService>(WISHLIST_MODULE);
+  const options = wishlistService._options;
+
+  if (!options.allowGuestWishlist && !customer_id) {
+    throw new MedusaError(
+      MedusaError.Types.UNAUTHORIZED,
+      "Guest wishlists are now allowed"
+    );
+  }
+
   try {
+    const query = req.scope.resolve("query");
+
     const { data: wishlist } = await query.graph({
       entity: "wishlist",
       filters: { id: wishlist_id },

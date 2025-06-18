@@ -7,18 +7,19 @@ import { PaginatedOutput, Wishlist } from "./types";
 import WishlistModuleService from "../../../modules/wishlist/service";
 import { WISHLIST_MODULE } from "../../../modules/wishlist";
 import { getPagination } from "../../../utils/utils";
+import { MedusaError } from "@medusajs/framework/utils";
 
 export async function GET(
   req: AuthenticatedMedusaRequest,
   res: MedusaResponse<PaginatedOutput<Wishlist>>
 ) {
   const customer_id = req.auth_context.actor_id;
+  const wishlistService =
+    req.scope.resolve<WishlistModuleService>(WISHLIST_MODULE);
+  const options = wishlistService._options;
 
   try {
     const query = req.scope.resolve("query");
-    const wishlistService =
-      req.scope.resolve<WishlistModuleService>(WISHLIST_MODULE);
-    const options = wishlistService._options;
 
     const { data, metadata } = await query.graph({
       entity: "wishlist",
@@ -83,10 +84,18 @@ export async function POST(
   const customer_id = req?.auth_context?.actor_id;
   const { ...input } = req.body;
 
-  try {
-    const wishlistService =
-      req.scope.resolve<WishlistModuleService>(WISHLIST_MODULE);
+  const wishlistService =
+    req.scope.resolve<WishlistModuleService>(WISHLIST_MODULE);
+  const options = wishlistService._options;
 
+  if (!options.allowGuestWishlist && !customer_id) {
+    throw new MedusaError(
+      MedusaError.Types.UNAUTHORIZED,
+      "Guest wishlists are now allowed"
+    );
+  }
+
+  try {
     const wishlist = await wishlistService.createWishlists({
       ...input,
       ...(customer_id && { customer_id }),

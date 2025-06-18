@@ -16,11 +16,19 @@ export const POST = async (
   const { id } = req.params;
   const customer_id = req?.auth_context?.actor_id;
 
+  const wishlistService =
+    req.scope.resolve<WishlistModuleService>(WISHLIST_MODULE);
+  const options = wishlistService._options;
+
+  if (!options.allowGuestWishlist && !customer_id) {
+    throw new MedusaError(
+      MedusaError.Types.UNAUTHORIZED,
+      "Guest wishlists are now allowed"
+    );
+  }
+
   try {
-    const wishlistService =
-      req.scope.resolve<WishlistModuleService>(WISHLIST_MODULE);
     const query = req.scope.resolve("query");
-    const options = wishlistService._options;
 
     const { data: wishlist } = await query.graph({
       entity: "wishlist",

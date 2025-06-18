@@ -17,12 +17,19 @@ export async function GET(
   const { id } = req.params;
   const customer_id = req?.auth_context?.actor_id;
 
+  const wishlistService =
+    req.scope.resolve<WishlistModuleService>(WISHLIST_MODULE);
+  const options = wishlistService._options;
+
+  if (!options.allowGuestWishlist && !customer_id) {
+    throw new MedusaError(
+      MedusaError.Types.UNAUTHORIZED,
+      "Guest wishlists are now allowed"
+    );
+  }
+
   try {
     const query = req.scope.resolve("query");
-    const wishlistService =
-      req.scope.resolve<WishlistModuleService>(WISHLIST_MODULE);
-
-    const options = wishlistService._options;
 
     const { data } = await query.graph({
       entity: "wishlist",
@@ -100,7 +107,7 @@ export async function DELETE(
     const wishlistService =
       req.scope.resolve<WishlistModuleService>(WISHLIST_MODULE);
 
-    await wishlistService.softDeleteWishlists({ id });
+    await wishlistService.deleteWishlists({ id });
 
     return res.status(200).json({
       id,

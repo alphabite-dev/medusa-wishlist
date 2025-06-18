@@ -8,36 +8,36 @@ import { WishlistItem } from "./models/wishlist-item";
 import { InjectManager } from "@medusajs/framework/utils";
 import { Context } from "@medusajs/framework/types";
 import { EntityManager } from "@mikro-orm/knex";
+import z from "zod";
 
-type Options = {
-  fields?: string[];
-  includeWishlistItems?: boolean;
-  includeWishlistItemsTake?: number;
-};
+const optionsSchema = z.object({
+  fields: z.array(z.string()).optional(),
+  includeWishlistItems: z.boolean().default(false),
+  includeWishlistItemsTake: z.number().default(5),
+  allowGuestWishlist: z.boolean().default(false),
+});
+
+export type AlphabiteWishlistPluginOptions = z.infer<typeof optionsSchema>;
 
 export default class WishlistModuleService extends MedusaService({
   Wishlist,
   WishlistItem,
 }) {
-  public _options: Options;
+  public _options: AlphabiteWishlistPluginOptions;
 
-  static validateOptions(_options: Record<any, any>): void | never {
-    if (_options.fields) {
-      if (
-        !Array.isArray(
-          _options.fields ||
-            _options.fields.every((item) => typeof item === "string")
-        )
-      ) {
-        throw new MedusaError(
-          MedusaError.Types.INVALID_DATA,
-          "Missing required options for DigitalOcean Storage"
-        );
-      }
+  static validateOptions(
+    _options: AlphabiteWishlistPluginOptions
+  ): void | never {
+    const parsed = optionsSchema.safeParse(_options);
+    if (!parsed.success) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        `Invalid options provided for WishlistModuleService: ${parsed.error.message}`
+      );
     }
   }
 
-  constructor({}, options: Options) {
+  constructor({}, options: AlphabiteWishlistPluginOptions) {
     super(...arguments);
     this._options = options || {};
   }
