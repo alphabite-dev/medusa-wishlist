@@ -17,6 +17,7 @@ export const defaultItemsFields = [
   "id",
   "product_id",
   "wishlist_id",
+  "wishlist.*",
   "created_at",
   "updated_at",
   "deleted_at",
