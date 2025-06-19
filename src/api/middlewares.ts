@@ -7,9 +7,13 @@ import {
 import { createFindParams } from "@medusajs/medusa/api/utils/validators";
 import {
   CreateWishlistInputSchema,
+  ListWishlistsQuerySchema,
   UpdateWishlistInputSchema,
 } from "./store/wishlists/validators";
 import { AddItemToWishlistInputSchema } from "./store/wishlists/[id]/add-item/validators";
+import { TotalItemsCountInputSchema } from "./store/wishlists/total-items-count/validators";
+import { RetrieveWishlistQuerySchema } from "./store/wishlists/[id]/validators";
+import { defaultItemsFields } from "../utils/utils";
 
 export default defineMiddlewares({
   routes: [
@@ -19,17 +23,25 @@ export default defineMiddlewares({
       methods: ["GET"],
       middlewares: [
         authenticate("customer", ["bearer"]),
-        validateAndTransformQuery(createFindParams(), {
-          defaults: [],
-          isList: true,
-        }),
+        validateAndTransformQuery(
+          createFindParams().extend(ListWishlistsQuerySchema.shape),
+          {
+            isList: true,
+          }
+        ),
       ],
     },
     //----Total Items Count-----//
     {
       matcher: "/store/wishlists/total-items-count",
       methods: ["GET"],
-      middlewares: [authenticate("customer", ["bearer"])],
+      middlewares: [
+        validateAndTransformQuery(TotalItemsCountInputSchema, {}),
+        authenticate("customer", ["bearer"], {
+          allowUnauthenticated: true,
+          allowUnregistered: true,
+        }),
+      ],
     },
     //----Retrieve Wishlist-----//
     {
@@ -40,15 +52,10 @@ export default defineMiddlewares({
           allowUnregistered: true,
           allowUnauthenticated: true,
         }),
-        validateAndTransformQuery(createFindParams(), {
-          defaults: [
-            "items.*",
-            "items.product_variant.*",
-            "items.product_variant.prices.*",
-            "items.product_variant.product.thumbnail",
-            "items.product_variant.product.id",
-          ],
-        }),
+        validateAndTransformQuery(
+          createFindParams().extend(RetrieveWishlistQuerySchema.shape),
+          {}
+        ),
       ],
     },
     //----Create wishlist-----//
@@ -94,19 +101,7 @@ export default defineMiddlewares({
           allowUnauthenticated: true,
         }),
         validateAndTransformQuery(createFindParams(), {
-          defaults: [
-            "id",
-            "product_id",
-            "wishlist_id",
-            "created_at",
-            "wishlist.customer_id",
-            "updated_at",
-            "deleted_at",
-            "product_variant.*",
-            "product_variant.prices.*",
-            "product_variant.calculated_price",
-            "product_variant.product.thumbnail",
-          ],
+          defaults: defaultItemsFields,
           isList: true,
         }),
       ],
@@ -122,19 +117,7 @@ export default defineMiddlewares({
         }),
         validateAndTransformBody(AddItemToWishlistInputSchema),
         validateAndTransformQuery(createFindParams(), {
-          defaults: [
-            "id",
-            "product_variant_id",
-            "wishlist_id",
-            "created_at",
-            "updated_at",
-            "deleted_at",
-            "product_variant.*",
-            "product_variant.prices.*",
-            "product_variant.calculated_price",
-            "product_variant.product.thumbnail",
-            "product_variant.product.id",
-          ],
+          defaults: defaultItemsFields,
         }),
       ],
     },

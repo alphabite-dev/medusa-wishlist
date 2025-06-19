@@ -2,21 +2,24 @@ import {
   AuthenticatedMedusaRequest,
   MedusaResponse,
 } from "@medusajs/framework";
-import { CreateWishlistInput } from "./validators";
+import { CreateWishlistInput, ListWishlistsQuery } from "./validators";
 import { PaginatedOutput, Wishlist } from "./types";
 import WishlistModuleService from "../../../modules/wishlist/service";
 import { WISHLIST_MODULE } from "../../../modules/wishlist";
-import { getPagination } from "../../../utils/utils";
+import { defaultItemsFields, getPagination } from "../../../utils/utils";
 import { MedusaError } from "@medusajs/framework/utils";
 
 export async function GET(
-  req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest<any, ListWishlistsQuery>,
   res: MedusaResponse<PaginatedOutput<Wishlist>>
 ) {
   const customer_id = req.auth_context.actor_id;
   const wishlistService =
     req.scope.resolve<WishlistModuleService>(WISHLIST_MODULE);
   const options = wishlistService._options;
+  const { items_fields } = req.validatedQuery;
+
+  console.log("ITEMS FIELDS QUERY:", items_fields);
 
   try {
     const query = req.scope.resolve("query");
@@ -34,21 +37,10 @@ export async function GET(
 
     const enriched_wishlist: Wishlist[] = await Promise.all(
       data.map(async (wishlist) => {
-        const { data: items } = await query.graph({
+        const { data: items, metadata } = await query.graph({
           entity: "wishlist_item",
           filters: { wishlist_id: wishlist.id },
-          fields: [
-            "id",
-            "product_id",
-            "wishlist_id",
-            "created_at",
-            "updated_at",
-            "deleted_at",
-            "product_variant.*",
-            "product_variant.prices.*",
-            "product_variant.calculated_price",
-            "product_variant.product.thumbnail",
-          ],
+          fields: [...defaultItemsFields, ...(items_fields || [])],
           pagination: {
             take: options?.includeWishlistItemsTake || 5,
             skip: 0,
@@ -58,7 +50,7 @@ export async function GET(
         return {
           ...wishlist,
           items: items.length > 0 ? items : [],
-          items_count: items.length,
+          items_count: metadata?.count,
         };
       })
     );

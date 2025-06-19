@@ -13,3 +13,9 @@ export const UpdateWishlistInputSchema = CreateWishlistInputSchema.pick({
 });
 
 export type UpdateWishlistInput = Zod.infer<typeof UpdateWishlistInputSchema>;
+
+export const ListWishlistsQuerySchema = z.object({
+  items_fields: z.array(z.string()).optional(),
+});
+
+export type ListWishlistsQuery = Zod.infer<typeof ListWishlistsQuerySchema>;

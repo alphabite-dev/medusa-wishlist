@@ -8,14 +8,17 @@ import WishlistModuleService from "../../../../modules/wishlist/service";
 import { UpdateWishlistInput } from "../validators";
 import { Wishlist } from "../types";
 import { WISHLIST_MODULE } from "../../../../modules/wishlist";
+import { RetrieveWishlistQuery } from "./validators";
+import { defaultItemsFields } from "../../../../utils/utils";
 
 //-----Retrieves a specific wishlist by ID-----//
 export async function GET(
-  req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest<any, RetrieveWishlistQuery>,
   res: MedusaResponse<Wishlist>
 ) {
   const { id } = req.params;
   const customer_id = req?.auth_context?.actor_id;
+  const { items_fields } = req.validatedQuery;
 
   const wishlistService =
     req.scope.resolve<WishlistModuleService>(WISHLIST_MODULE);
@@ -37,11 +40,7 @@ export async function GET(
         id,
       },
       ...req.queryConfig,
-      fields: [
-        "*",
-        ...(req.queryConfig.fields || []),
-        ...(options?.wishlistFields || []),
-      ],
+      fields: ["*", ...(options?.wishlistFields || [])],
     });
 
     const wishlist = data?.[0];
@@ -60,9 +59,23 @@ export async function GET(
       );
     }
 
+    const { data: items, metadata: items_metadata } = await query.graph({
+      entity: "wishlist_item",
+      filters: { wishlist_id: wishlist.id },
+      fields: [
+        ...defaultItemsFields,
+        ...(options?.wishlistItemsFields || []),
+        ...(items_fields || []),
+      ],
+      pagination: {
+        take: options?.includeWishlistItemsTake || 5,
+        skip: 0,
+      },
+    });
+
     return res
       .status(200)
-      .json({ ...wishlist, items_count: wishlist.items.length });
+      .json({ ...wishlist, items_count: items_metadata?.count, items });
   } catch (error) {
     console.log("Error fetching wishlists:", error);
 

@@ -60,68 +60,22 @@ export default class WishlistModuleService extends MedusaService({
   }
 
   @InjectManager()
-  async getWishlistsOfProducts(
-    productIds: string[],
-    @MedusaContext() context: Context<EntityManager> = {}
-  ) {
-    return await context.manager
-      ?.createQueryBuilder("wishlist_item", "wi")
-      .where("wi.product_id IN (?)", [productIds])
-      .execute();
-  }
-
-  @InjectManager()
-  async getWishlistItemId(
-    customerId: string,
-    productId: string,
-    @MedusaContext() context: Context<EntityManager> = {}
-  ): Promise<string> {
-    const wishlist: any = await context.manager
-      ?.createQueryBuilder("wishlist", "w")
-      .select(["w.id"])
-      .where("w.customer_id = ?", [customerId])
-      .execute();
-
-    if (!wishlist?.[0]?.id) {
-      throw new Error("Wishlist not found");
-    }
-
-    const wishlistId = wishlist[0].id;
-
-    const wishlistItem: any = await context.manager
-      ?.createQueryBuilder("wishlist_item", "wi")
-      .select(["wi.id"])
-      .where("wi.wishlist_id = ?", [wishlistId])
-      .andWhere("wi.product_id = ?", [productId])
-      .andWhere("wi.deleted_at IS NULL")
-      .execute();
-
-    if (!wishlistItem?.[0]?.id) {
-      throw new Error("Wishlist item not found");
-    }
-
-    return wishlistItem[0].id;
-  }
-
-  @InjectManager()
   async totalItemsCount(
-    customerId: string,
+    {
+      customer_id,
+      wishlist_id,
+    }: { customer_id?: string; wishlist_id?: string },
+
     @MedusaContext() context: Context<EntityManager> = {}
   ): Promise<number> {
-    interface CountResult {
-      total: string;
-    }
+    const wishlist_items_count = await context.manager?.count(WishlistItem, {
+      wishlist: {
+        ...(customer_id && { customer_id }),
+        ...(wishlist_id &&
+          !customer_id && { id: wishlist_id, customer_id: null }),
+      },
+    });
 
-    const rawResult = await context.manager
-      ?.createQueryBuilder("wishlist_item", "wi")
-      .select(["COUNT(wi.id) AS total"])
-      .leftJoin("wi.wishlist", "w")
-      .where({ "w.customer_id": customerId })
-      .andWhere({ "wi.deleted_at": null })
-      .execute<CountResult>();
-
-    console.log("Raw result from count query:", rawResult);
-
-    return Number(rawResult?.total || 0);
+    return Number(wishlist_items_count || 0);
   }
 }
