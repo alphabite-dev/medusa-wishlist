@@ -29,32 +29,34 @@ export async function GET(
       fields: [
         "*",
         ...(options?.wishlistFields || []),
-        ...(options.includeWishlistItems ? req.queryConfig.fields : []),
+        ...req.queryConfig.fields,
       ],
     });
 
-    const enriched_wishlist: Wishlist[] = await Promise.all(
-      data.map(async (wishlist) => {
-        const { data: items, metadata } = await query.graph({
-          entity: "wishlist_item",
-          filters: { wishlist_id: wishlist.id },
-          fields: [...defaultItemsFields, ...(items_fields || [])],
-          pagination: {
-            take: options?.includeWishlistItemsTake || 5,
-            skip: 0,
-          },
-        });
+    const wishlists: Wishlist[] = options.includeWishlistItems
+      ? await Promise.all(
+          data.map(async (wishlist) => {
+            const { data: items, metadata } = await query.graph({
+              entity: "wishlist_item",
+              filters: { wishlist_id: wishlist.id },
+              fields: [...defaultItemsFields, ...(items_fields || [])],
+              pagination: {
+                take: options?.includeWishlistItemsTake || 5,
+                skip: 0,
+              },
+            });
 
-        return {
-          ...wishlist,
-          items: items.length > 0 ? items : [],
-          items_count: metadata?.count,
-        };
-      })
-    );
+            return {
+              ...wishlist,
+              items: items.length > 0 ? items : [],
+              items_count: metadata?.count,
+            };
+          })
+        )
+      : data;
 
     return res.status(200).json({
-      data: enriched_wishlist,
+      data: wishlists,
       take: metadata?.take || 5,
       skip: metadata?.skip || 0,
       ...getPagination(metadata!),
