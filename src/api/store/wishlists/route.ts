@@ -19,8 +19,6 @@ export async function GET(
   const options = wishlistService._options;
   const { items_fields } = req.validatedQuery;
 
-  console.log("ITEMS FIELDS QUERY:", items_fields);
-
   try {
     const query = req.scope.resolve("query");
 

@@ -399,6 +399,14 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Total Items Count",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
 		}
 	]
 }
