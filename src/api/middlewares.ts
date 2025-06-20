@@ -14,6 +14,7 @@ import { AddItemToWishlistInputSchema } from "./store/wishlists/[id]/add-item/va
 import { TotalItemsCountInputSchema } from "./store/wishlists/total-items-count/validators";
 import { RetrieveWishlistQuerySchema } from "./store/wishlists/[id]/validators";
 import { defaultItemsFields } from "../utils/utils";
+import { ImportWishlistInputSchema } from "./store/wishlists/import/validators";
 
 export default defineMiddlewares({
   routes: [
@@ -23,12 +24,9 @@ export default defineMiddlewares({
       methods: ["GET"],
       middlewares: [
         authenticate("customer", ["bearer"]),
-        validateAndTransformQuery(
-          createFindParams().extend(ListWishlistsQuerySchema.shape),
-          {
-            isList: true,
-          }
-        ),
+        validateAndTransformQuery(createFindParams().extend(ListWishlistsQuerySchema.shape), {
+          isList: true,
+        }),
       ],
     },
     //----Total Items Count-----//
@@ -52,10 +50,7 @@ export default defineMiddlewares({
           allowUnregistered: true,
           allowUnauthenticated: true,
         }),
-        validateAndTransformQuery(
-          createFindParams().extend(RetrieveWishlistQuerySchema.shape),
-          {}
-        ),
+        validateAndTransformQuery(createFindParams().extend(RetrieveWishlistQuerySchema.shape), {}),
       ],
     },
     //----Create wishlist-----//
@@ -74,10 +69,7 @@ export default defineMiddlewares({
     {
       matcher: "/store/wishlists/:id",
       methods: ["PUT"],
-      middlewares: [
-        authenticate("customer", ["bearer"]),
-        validateAndTransformBody(UpdateWishlistInputSchema),
-      ],
+      middlewares: [authenticate("customer", ["bearer"]), validateAndTransformBody(UpdateWishlistInputSchema)],
     },
     //----Delete wishlist-----//
     {
@@ -90,6 +82,29 @@ export default defineMiddlewares({
       matcher: "/store/wishlists/:id/transfer",
       methods: ["POST"],
       middlewares: [authenticate("customer", ["bearer"])],
+    },
+    //----Share wishlist-----//
+    {
+      matcher: "/store/wishlists/:id/share",
+      methods: ["POST"],
+      middlewares: [
+        authenticate("customer", ["bearer"], {
+          allowUnregistered: true,
+          allowUnauthenticated: true,
+        }),
+      ],
+    },
+    //----Import wishlist-----//
+    {
+      matcher: "/store/wishlists/import",
+      methods: ["POST"],
+      middlewares: [
+        authenticate("customer", ["bearer"], {
+          allowUnregistered: true,
+          allowUnauthenticated: true,
+        }),
+        validateAndTransformBody(ImportWishlistInputSchema),
+      ],
     },
     //----List Wishlist Items-----//
     {

@@ -8,6 +8,8 @@ export interface TransferWishlistOutput {
 }
 
 export async function POST(req: AuthenticatedMedusaRequest, res: MedusaResponse<TransferWishlistOutput>) {
+  const logger = req.scope.resolve("logger");
+
   const customer_id = req.auth_context.actor_id;
   const { id } = req.params;
 
@@ -18,7 +20,7 @@ export async function POST(req: AuthenticatedMedusaRequest, res: MedusaResponse<
 
     return res.status(200).json({ id });
   } catch (error) {
-    console.log("Transfer wishlists failed:", error);
+    logger.error("Transfer wishlists failed:", error);
 
     return res.status(500).end();
   }

@@ -1,7 +1,4 @@
-import {
-  AuthenticatedMedusaRequest,
-  MedusaResponse,
-} from "@medusajs/framework";
+import { AuthenticatedMedusaRequest, MedusaResponse } from "@medusajs/framework";
 import { CreateWishlistInput, ListWishlistsQuery } from "./validators";
 import { PaginatedOutput, Wishlist } from "./types";
 import WishlistModuleService from "../../../modules/wishlist/service";
@@ -13,9 +10,10 @@ export async function GET(
   req: AuthenticatedMedusaRequest<any, ListWishlistsQuery>,
   res: MedusaResponse<PaginatedOutput<Wishlist>>
 ) {
+  const logger = req.scope.resolve("logger");
+
   const customer_id = req.auth_context.actor_id;
-  const wishlistService =
-    req.scope.resolve<WishlistModuleService>(WISHLIST_MODULE);
+  const wishlistService = req.scope.resolve<WishlistModuleService>(WISHLIST_MODULE);
   const options = wishlistService._options;
   const { items_fields } = req.validatedQuery;
 
@@ -26,11 +24,7 @@ export async function GET(
       entity: "wishlist",
       filters: { customer_id },
       ...req.queryConfig,
-      fields: [
-        "*",
-        ...(options?.wishlistFields || []),
-        ...req.queryConfig.fields,
-      ],
+      fields: ["*", ...(options?.wishlistFields || []), ...req.queryConfig.fields],
     });
 
     const wishlists: Wishlist[] = options.includeWishlistItems
@@ -62,7 +56,7 @@ export async function GET(
       ...getPagination(metadata!),
     });
   } catch (error) {
-    console.log("Error fetching wishlists:", error);
+    logger.error("Error fetching wishlists:", error);
 
     return res.status(500).end();
   }
@@ -70,22 +64,17 @@ export async function GET(
 
 //-----Create wishlists-----//
 
-export async function POST(
-  req: AuthenticatedMedusaRequest<CreateWishlistInput>,
-  res: MedusaResponse<Wishlist>
-) {
+export async function POST(req: AuthenticatedMedusaRequest<CreateWishlistInput>, res: MedusaResponse<Wishlist>) {
+  const logger = req.scope.resolve("logger");
+
   const customer_id = req?.auth_context?.actor_id;
   const { ...input } = req.body;
 
-  const wishlistService =
-    req.scope.resolve<WishlistModuleService>(WISHLIST_MODULE);
+  const wishlistService = req.scope.resolve<WishlistModuleService>(WISHLIST_MODULE);
   const options = wishlistService._options;
 
   if (!options.allowGuestWishlist && !customer_id) {
-    throw new MedusaError(
-      MedusaError.Types.UNAUTHORIZED,
-      "Guest wishlists are now allowed"
-    );
+    throw new MedusaError(MedusaError.Types.UNAUTHORIZED, "Guest wishlists are now allowed");
   }
 
   try {
@@ -96,6 +85,8 @@ export async function POST(
 
     return res.status(201).json({ ...wishlist, items_count: 0, items: [] });
   } catch (error) {
+    logger.error("Error creating wishlist:", error);
+
     return res.status(500).end();
   }
 }

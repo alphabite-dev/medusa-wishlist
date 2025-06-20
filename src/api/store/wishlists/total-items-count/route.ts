@@ -1,7 +1,4 @@
-import {
-  AuthenticatedMedusaRequest,
-  MedusaResponse,
-} from "@medusajs/framework";
+import { AuthenticatedMedusaRequest, MedusaResponse } from "@medusajs/framework";
 import WishlistModuleService from "../../../../modules/wishlist/service";
 import { WISHLIST_MODULE } from "../../../../modules/wishlist";
 import { TotalItemsCountInput } from "./validators";
@@ -15,6 +12,8 @@ export async function GET(
   req: AuthenticatedMedusaRequest<any, TotalItemsCountInput>,
   res: MedusaResponse<TotalItemsCountOutput>
 ) {
+  const logger = req.scope.resolve("logger");
+
   const { wishlist_id } = req.validatedQuery;
 
   const customer_id = req?.auth_context?.actor_id;
@@ -25,8 +24,7 @@ export async function GET(
     });
   }
 
-  const wishlistService =
-    req.scope.resolve<WishlistModuleService>(WISHLIST_MODULE);
+  const wishlistService = req.scope.resolve<WishlistModuleService>(WISHLIST_MODULE);
 
   try {
     const count = await wishlistService.totalItemsCount({
@@ -38,7 +36,7 @@ export async function GET(
       total_items_count: count,
     });
   } catch (error) {
-    console.log("Error fetching wishlists:", error);
+    logger.error("Error fetching wishlists:", error);
 
     return res.status(500).end();
   }

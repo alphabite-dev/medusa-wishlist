@@ -51,16 +51,17 @@
     "@medusajs/admin-sdk": "2.8.3",
     "@medusajs/cli": "2.8.3",
     "@medusajs/framework": "2.8.3",
+    "@medusajs/icons": "2.8.3",
     "@medusajs/medusa": "2.8.3",
     "@medusajs/test-utils": "2.8.3",
     "@medusajs/ui": "4.0.4",
-    "@medusajs/icons": "2.8.3",
     "@mikro-orm/cli": "6.4.3",
     "@mikro-orm/core": "6.4.3",
     "@mikro-orm/knex": "6.4.3",
     "@mikro-orm/migrations": "6.4.3",
     "@mikro-orm/postgresql": "6.4.3",
     "@swc/core": "1.5.7",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20.0.0",
     "@types/react": "^18.3.2",
     "@types/react-dom": "^18.2.25",
@@ -78,10 +79,10 @@
     "@medusajs/admin-sdk": "2.8.3",
     "@medusajs/cli": "2.8.3",
     "@medusajs/framework": "2.8.3",
-    "@medusajs/test-utils": "2.8.3",
-    "@medusajs/medusa": "2.8.3",
-    "@medusajs/ui": "4.0.3",
     "@medusajs/icons": "2.8.3",
+    "@medusajs/medusa": "2.8.3",
+    "@medusajs/test-utils": "2.8.3",
+    "@medusajs/ui": "4.0.3",
     "@mikro-orm/cli": "6.4.3",
     "@mikro-orm/core": "6.4.3",
     "@mikro-orm/knex": "6.4.3",
@@ -96,5 +97,6 @@
   "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610",
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "dependencies": {}
 }

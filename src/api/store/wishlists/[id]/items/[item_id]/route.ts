@@ -1,7 +1,4 @@
-import {
-  AuthenticatedMedusaRequest,
-  MedusaResponse,
-} from "@medusajs/framework";
+import { AuthenticatedMedusaRequest, MedusaResponse } from "@medusajs/framework";
 import WishlistModuleService from "../../../../../../modules/wishlist/service";
 import { WISHLIST_MODULE } from "../../../../../../modules/wishlist";
 import { MedusaError } from "@medusajs/framework/utils";
@@ -11,22 +8,17 @@ export interface DeleteWishlistItemOutput {
   id: string;
 }
 
-export const DELETE = async (
-  req: AuthenticatedMedusaRequest,
-  res: MedusaResponse<DeleteWishlistItemOutput>
-) => {
+export const DELETE = async (req: AuthenticatedMedusaRequest, res: MedusaResponse<DeleteWishlistItemOutput>) => {
+  const logger = req.scope.resolve("logger");
+
   const { item_id, id: wishlist_id } = req.params;
   const customer_id = req?.auth_context?.actor_id;
 
-  const wishlistService =
-    req.scope.resolve<WishlistModuleService>(WISHLIST_MODULE);
+  const wishlistService = req.scope.resolve<WishlistModuleService>(WISHLIST_MODULE);
   const options = wishlistService._options;
 
   if (!options.allowGuestWishlist && !customer_id) {
-    throw new MedusaError(
-      MedusaError.Types.UNAUTHORIZED,
-      "Guest wishlists are now allowed"
-    );
+    throw new MedusaError(MedusaError.Types.UNAUTHORIZED, "Guest wishlists are now allowed");
   }
 
   try {
@@ -45,11 +37,7 @@ export const DELETE = async (
       );
     }
 
-    if (
-      customer_id &&
-      wishlist[0]?.customer_id &&
-      wishlist[0]?.customer_id !== customer_id
-    ) {
+    if (customer_id && wishlist[0]?.customer_id && wishlist[0]?.customer_id !== customer_id) {
       throw new MedusaError(
         MedusaError.Types.UNAUTHORIZED,
         "You are not authorized to remove items from this wishlist"
@@ -61,7 +49,7 @@ export const DELETE = async (
 
     return res.status(200).json({ id: item_id });
   } catch (error) {
-    console.log("Error fetching wishlists:", error);
+    logger.error("Error fetching wishlists:", error);
 
     return res.status(500).end();
   }
