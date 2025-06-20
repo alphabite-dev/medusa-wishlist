@@ -1,0 +1,521 @@
+{
+	"info": {
+		"_postman_id": "74fa67fe-6727-4f0e-8200-d1a0dc61cc2a",
+		"name": "Alphabite Wishlist",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "45926097"
+	},
+	"item": [
+		{
+			"name": "Create Wishlist",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "{{api_key_header}}",
+						"value": "{{publishable_api_key}}",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{auth_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\":\"New Wishlist\",\r\n    \"sales_channel_id\": \"sc_\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api_url}}/store/wishlists",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"store",
+						"wishlists"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List Wishlists",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "{{api_key_header}}",
+						"value": "{{publishable_api_key}}",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{auth_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api_url}}/store/wishlists?limit=5&offset=0&order=created_at",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"store",
+						"wishlists"
+					],
+					"query": [
+						{
+							"key": "limit",
+							"value": "5"
+						},
+						{
+							"key": "offset",
+							"value": "0"
+						},
+						{
+							"key": "order",
+							"value": "created_at"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retrieve Wishlist",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "{{api_key_header}}",
+						"value": "{{publishable_api_key}}",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{auth_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{api_url}}/store/wishlists/:wishlist_id",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"store",
+						"wishlists",
+						":wishlist_id"
+					],
+					"variable": [
+						{
+							"key": "wishlist_id",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Wishlist",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "{{api_key_header}}",
+						"value": "{{publishable_api_key}}",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{api_key_header}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Updated name\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api_url}}/store/wishlists/:wishlist_id",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"store",
+						"wishlists",
+						":wishlist_id"
+					],
+					"variable": [
+						{
+							"key": "wishlist_id",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Wishlist",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "{{api_key_header}}",
+						"value": "{{publishable_api_key}}",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{auth_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{api_url}}/store/wishlists/:wishlist_id",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"store",
+						"wishlists",
+						":wishlist_id"
+					],
+					"variable": [
+						{
+							"key": "wishlist_id",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Wishlists Total Items Count",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "{{api_key_header}}",
+						"value": "{{publishable_api_key}}",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{auth_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{api_url}}/store/wishlists/total-items-count",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"store",
+						"wishlists",
+						"total-items-count"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Transfer Wishlist",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "{{api_key_header}}",
+						"value": "{{publishable_api_key}}",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{auth_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{api_url}}/store/wishlists/:wishlist_id/transfer",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"store",
+						"wishlists",
+						":wishlist_id",
+						"transfer"
+					],
+					"variable": [
+						{
+							"key": "wishlist_id",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Share Wishlist",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "{{api_key_header}}",
+						"value": "{{publishable_api_key}}",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{auth_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{api_url}}/store/wishlists/:wishlist_id/share",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"store",
+						"wishlists",
+						":wishlist_id",
+						"share"
+					],
+					"variable": [
+						{
+							"key": "wishlist_id",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Import Wishlist",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "{{api_key_header}}",
+						"value": "{{publishable_api_key}}",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{auth_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"share_token\": \"XYZ\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api_url}}/store/wishlists/import",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"store",
+						"wishlists",
+						"import"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Item to Wishlist",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "{{api_key_header}}",
+						"value": "{{publishable_api_key}}",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{auth_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"product_variant_id\": \"variant_\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api_url}}/store/wishlists/:wishlist_id/add-item",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"store",
+						"wishlists",
+						":wishlist_id",
+						"add-item"
+					],
+					"variable": [
+						{
+							"key": "wishlist_id",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List Wishlist Items",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "{{api_key_header}}",
+						"value": "{{publishable_api_key}}",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{auth_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{api_url}}store/wishlists/:wishlist_id/items?limit=5&offset=0",
+					"host": [
+						"{{api_url}}store"
+					],
+					"path": [
+						"wishlists",
+						":wishlist_id",
+						"items"
+					],
+					"query": [
+						{
+							"key": "limit",
+							"value": "5"
+						},
+						{
+							"key": "offset",
+							"value": "0"
+						}
+					],
+					"variable": [
+						{
+							"key": "wishlist_id",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Remove Item from Wishlist",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "{{api_key_header}}",
+						"value": "{{publishable_api_key}}",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{auth_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{api_url}}/store/wishlists/:wishlist_id/items/:wishlist_item_id",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"store",
+						"wishlists",
+						":wishlist_id",
+						"items",
+						":wishlist_item_id"
+					],
+					"variable": [
+						{
+							"key": "wishlist_id",
+							"value": ""
+						},
+						{
+							"key": "wishlist_item_id",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
