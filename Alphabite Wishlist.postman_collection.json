@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "74fa67fe-6727-4f0e-8200-d1a0dc61cc2a",
+		"_postman_id": "45e12395-5fdd-4ec0-be7e-0ff137c1b175",
 		"name": "Alphabite Wishlist",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "45926097"
@@ -443,11 +443,12 @@
 					}
 				],
 				"url": {
-					"raw": "{{api_url}}store/wishlists/:wishlist_id/items?limit=5&offset=0",
+					"raw": "{{api_url}}/store/wishlists/:wishlist_id/items?limit=5&offset=0",
 					"host": [
-						"{{api_url}}store"
+						"{{api_url}}"
 					],
 					"path": [
+						"store",
 						"wishlists",
 						":wishlist_id",
 						"items"

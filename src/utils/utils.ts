@@ -1,10 +1,6 @@
 import { RemoteQueryFunctionReturnPagination } from "@medusajs/framework/types";
 
-export const getPagination = ({
-  count,
-  take,
-  skip,
-}: RemoteQueryFunctionReturnPagination) => {
+export const getPagination = ({ count, take, skip }: RemoteQueryFunctionReturnPagination) => {
   const totalPages = Math.max(Math.ceil(count / take), 1);
   const currentPage = skip / take + 1;
   const nextPage = Math.min(currentPage + 1, totalPages);
@@ -17,7 +13,6 @@ export const defaultItemsFields = [
   "id",
   "product_id",
   "wishlist_id",
-  "wishlist.*",
   "created_at",
   "updated_at",
   "deleted_at",

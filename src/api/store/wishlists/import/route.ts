@@ -3,6 +3,7 @@ import { MedusaError } from "@medusajs/framework/utils";
 import WishlistModuleService from "../../../../modules/wishlist/service";
 import { WISHLIST_MODULE } from "../../../../modules/wishlist";
 import { Wishlist } from "../types";
+import { defaultItemsFields } from "../../../../utils/utils";
 
 export const POST = async (req: AuthenticatedMedusaRequest<{ share_token: string }>, res: MedusaResponse<Wishlist>) => {
   const logger = req.scope.resolve("logger");
@@ -32,9 +33,19 @@ export const POST = async (req: AuthenticatedMedusaRequest<{ share_token: string
   }
 
   try {
-    const created_wishlist = await wishlistService.importWishlist({ id: wishlist_id });
+    const created_wishlist = await wishlistService.importWishlist({ id: wishlist_id, customer_id });
 
-    return res.status(200).json(created_wishlist);
+    const query = req.scope.resolve("query");
+
+    const { data: wishlist_items } = await query.graph({
+      entity: "wishlist_item",
+      filters: {
+        wishlist_id: created_wishlist.id,
+      },
+      fields: [...defaultItemsFields, ...(options?.wishlistItemsFields || [])],
+    });
+
+    return res.status(200).json({ ...created_wishlist, items: wishlist_items });
   } catch (error) {
     logger.error("Error importing wishlist:", error);
 

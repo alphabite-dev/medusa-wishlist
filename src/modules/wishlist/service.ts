@@ -37,7 +37,7 @@ export default class WishlistModuleService extends MedusaService({
   }
 
   constructor({}, options: AlphabiteWishlistPluginOptions) {
-    super();
+    super(...arguments);
     this._options = options || {};
   }
 
