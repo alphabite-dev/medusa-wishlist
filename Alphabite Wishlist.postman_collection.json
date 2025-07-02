@@ -518,5 +518,49 @@
 			},
 			"response": []
 		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "api_url",
+			"value": "http://localhost:9000",
+			"type": "string"
+		},
+		{
+			"key": "publishable_api_key",
+			"value": "pk_",
+			"type": "string"
+		},
+		{
+			"key": "api_key_header",
+			"value": "x-publishable-api-key",
+			"type": "string"
+		},
+		{
+			"key": "auth_token",
+			"value": "Bearer XYZ",
+			"type": "string"
+		}
 	]
 }

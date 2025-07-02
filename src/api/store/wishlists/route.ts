@@ -4,7 +4,7 @@ import { PaginatedOutput, Wishlist } from "./types";
 import WishlistModuleService from "../../../modules/wishlist/service";
 import { WISHLIST_MODULE } from "../../../modules/wishlist";
 import { defaultItemsFields, getPagination } from "../../../utils/utils";
-import { MedusaError } from "@medusajs/framework/utils";
+import { MedusaError, promiseAll } from "@medusajs/framework/utils";
 
 export async function GET(
   req: AuthenticatedMedusaRequest<any, ListWishlistsQuery>,
@@ -53,7 +53,7 @@ export async function GET(
       data: wishlists,
       take: metadata?.take || 5,
       skip: metadata?.skip || 0,
-      ...getPagination(metadata!),
+      ...getPagination(metadata),
     });
   } catch (error) {
     logger.error("Error fetching wishlists:", error);

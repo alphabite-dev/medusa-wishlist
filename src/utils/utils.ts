@@ -1,6 +1,8 @@
 import { RemoteQueryFunctionReturnPagination } from "@medusajs/framework/types";
 
-export const getPagination = ({ count, take, skip }: RemoteQueryFunctionReturnPagination) => {
+export const getPagination = (opts?: RemoteQueryFunctionReturnPagination) => {
+  const { count = 0, take = 10, skip = 0 } = opts || {};
+
   const totalPages = Math.max(Math.ceil(count / take), 1);
   const currentPage = skip / take + 1;
   const nextPage = Math.min(currentPage + 1, totalPages);

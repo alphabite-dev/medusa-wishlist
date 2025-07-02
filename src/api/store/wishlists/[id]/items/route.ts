@@ -38,7 +38,7 @@ export const GET = async (req: AuthenticatedMedusaRequest, res: MedusaResponse<P
       data: wishlist_items.map(({ wishlist, ...wishlist_item }) => wishlist_item),
       skip: metadata?.skip || 0,
       take: metadata?.take || 5,
-      ...getPagination(metadata!),
+      ...getPagination(metadata),
     });
   } catch (error) {
     logger.error("Error fetching wishlist items:", error);
