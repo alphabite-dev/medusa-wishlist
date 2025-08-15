@@ -147,7 +147,7 @@ export default defineMiddlewares({
     },
     //----Remove item from wishlist-----//
     {
-      matcher: "/store/wishlists/:id/remove-item/:item_id",
+      matcher: "/store/wishlists/:id/items/:item_id",
       methods: ["DELETE"],
       middlewares: [
         authenticate("customer", ["bearer"], {
