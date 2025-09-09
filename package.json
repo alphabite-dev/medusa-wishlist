@@ -1,9 +1,11 @@
 {
   "name": "@alphabite/medusa-wishlist",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Alphabite's Medusa Wishlist Plugin",
   "author": "Alphabite (https://alphabite.io)",
   "license": "MIT",
+  "main": "./.medusa/server/src/index.js",
+  "types": "./.medusa/types/index.d.ts",
   "files": [
     ".medusa/server",
     ".medusa/types"
