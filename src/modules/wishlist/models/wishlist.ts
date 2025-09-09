@@ -1,5 +1,6 @@
 import { model } from "@medusajs/framework/utils";
 import { WishlistItem } from "./wishlist-item";
+import { InferTypeOf } from "@medusajs/framework/types";
 
 export const Wishlist = model
   .define("wishlist", {
