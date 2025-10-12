@@ -43,7 +43,11 @@ export const GET = async (
       ],
     });
 
-    if (customer_id && wishlist_items[0].wishlist.customer_id !== customer_id) {
+    if (
+      wishlist_items.length > 0 &&
+      customer_id &&
+      wishlist_items[0].wishlist.customer_id !== customer_id
+    ) {
       throw new MedusaError(
         MedusaError.Types.UNAUTHORIZED,
         "You are not authorized to access this wishlist items"
