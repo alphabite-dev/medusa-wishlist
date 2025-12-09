@@ -68,8 +68,6 @@ export async function GET(req: AuthenticatedMedusaRequest<any, RetrieveWishlistQ
         sales_channel_id: wishlist.sales_channel_id,
         variant_ids: items.map((i) => i.product_variant_id),
       });
-
-      console.log(variantsAvailability);
     }
 
     let variantsPrices: Record<string, CalculatedPriceSet> = {};
