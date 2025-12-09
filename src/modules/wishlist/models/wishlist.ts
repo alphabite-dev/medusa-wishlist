@@ -16,3 +16,5 @@ export const Wishlist = model
       where: { customer_id: { $ne: null } },
     },
   ]);
+
+export type WishlistType = InferTypeOf<typeof Wishlist>;
