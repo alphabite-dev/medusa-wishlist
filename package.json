@@ -52,9 +52,7 @@
   "scripts": {
     "build": "npx medusa plugin:build && npm run build:types",
     "build:types": "tsc --project tsconfig.types.json",
-    "dev": "medusa plugin:develop",
-    "prepublishOnly": "medusa plugin:build",
-    "generate:openapi": "npx postman-to-openapi alphabite-wishlist-postman.json -o openapi.yaml"
+    "dev": "medusa plugin:develop"
   },
   "devDependencies": {
     "@medusajs/admin-sdk": "2.8.3",
