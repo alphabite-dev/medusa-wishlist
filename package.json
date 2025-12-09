@@ -1,11 +1,14 @@
 {
   "name": "@alphabite/medusa-wishlist",
-  "version": "0.4.2",
+  "version": "0.5.3",
   "description": "Alphabite's Medusa Wishlist Plugin",
   "author": "Alphabite (https://alphabite.io)",
   "license": "MIT",
+  "main": "./.medusa/server/src/index.js",
+  "types": "./.medusa/types/index.d.ts",
   "files": [
-    ".medusa/server"
+    ".medusa/server",
+    ".medusa/types"
   ],
   "bugs": {
     "url": "https://github.com/alphabite-dev/medusa-client/issues"
@@ -16,8 +19,13 @@
     "url": "git+ssh://git@github.com/alphabite-dev/medusa-wishlist.git"
   },
   "exports": {
+    ".": {
+      "types": "./.medusa/types/index.d.ts",
+      "import": "./.medusa/server/src/index.js",
+      "require": "./.medusa/server/src/index.js",
+      "default": "./.medusa/server/src/index.js"
+    },
     "./package.json": "./package.json",
-    "./workflows": "./.medusa/server/src/workflows/index.js",
     "./.medusa/server/src/modules/*": "./.medusa/server/src/modules/*/index.js",
     "./modules/*": "./.medusa/server/src/modules/*/index.js",
     "./utils/*": "./.medusa/server/src/utils/*/index.js",
@@ -42,7 +50,8 @@
     "medusa-wishlist"
   ],
   "scripts": {
-    "build": "medusa plugin:build",
+    "build": "npx medusa plugin:build && npm run build:types",
+    "build:types": "tsc --project tsconfig.types.json",
     "dev": "medusa plugin:develop",
     "prepublishOnly": "medusa plugin:build",
     "generate:openapi": "npx postman-to-openapi alphabite-wishlist-postman.json -o openapi.yaml"

@@ -24,9 +24,12 @@ export default defineMiddlewares({
       methods: ["GET"],
       middlewares: [
         authenticate("customer", ["bearer"]),
-        validateAndTransformQuery(createFindParams().extend(ListWishlistsQuerySchema.shape), {
-          isList: true,
-        }),
+        validateAndTransformQuery(
+          createFindParams().extend(ListWishlistsQuerySchema.shape),
+          {
+            isList: true,
+          }
+        ),
       ],
     },
     //----Total Items Count-----//
@@ -50,7 +53,10 @@ export default defineMiddlewares({
           allowUnregistered: true,
           allowUnauthenticated: true,
         }),
-        validateAndTransformQuery(createFindParams().extend(RetrieveWishlistQuerySchema.shape), {}),
+        validateAndTransformQuery(
+          createFindParams().extend(RetrieveWishlistQuerySchema.shape),
+          {}
+        ),
       ],
     },
     //----Create wishlist-----//
@@ -69,7 +75,10 @@ export default defineMiddlewares({
     {
       matcher: "/store/wishlists/:id",
       methods: ["PUT"],
-      middlewares: [authenticate("customer", ["bearer"]), validateAndTransformBody(UpdateWishlistInputSchema)],
+      middlewares: [
+        authenticate("customer", ["bearer"]),
+        validateAndTransformBody(UpdateWishlistInputSchema),
+      ],
     },
     //----Delete wishlist-----//
     {
@@ -116,7 +125,7 @@ export default defineMiddlewares({
           allowUnauthenticated: true,
         }),
         validateAndTransformQuery(createFindParams(), {
-          defaults: defaultItemsFields,
+          defaults: [...defaultItemsFields, "wishlist.*"],
           isList: true,
         }),
       ],
@@ -138,7 +147,7 @@ export default defineMiddlewares({
     },
     //----Remove item from wishlist-----//
     {
-      matcher: "/store/wishlists/:id/remove-item/:item_id",
+      matcher: "/store/wishlists/:id/items/:item_id",
       methods: ["DELETE"],
       middlewares: [
         authenticate("customer", ["bearer"], {

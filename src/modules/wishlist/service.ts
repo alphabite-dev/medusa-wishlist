@@ -1,4 +1,8 @@
-import { MedusaContext, MedusaError, MedusaService } from "@medusajs/framework/utils";
+import {
+  MedusaContext,
+  MedusaError,
+  MedusaService,
+} from "@medusajs/framework/utils";
 import { Wishlist } from "./models/wishlist";
 import { WishlistItem } from "./models/wishlist-item";
 import { InjectManager } from "@medusajs/framework/utils";
@@ -7,7 +11,47 @@ import { EntityManager } from "@mikro-orm/knex";
 import jwt from "jsonwebtoken";
 import z from "zod";
 import { Wishlist as WishlistType } from "../../api/store/wishlists/types";
-import { Logger } from "@medusajs/medusa";
+
+/**
+ * Options for configuring the Alphabite Wishlist Plugin
+ */
+export type AlphabiteWishlistPluginOptions = {
+  /**
+   * List of fields to retrieve when fetching a wishlist.
+   * Example: ['id', 'name', 'createdAt']
+   */
+  wishlistFields?: string[];
+
+  /**
+   * List of fields to retrieve for each wishlist item.
+   * Example: ['id', 'name', 'price']
+   */
+  wishlistItemsFields?: string[];
+
+  /**
+   * Whether to include wishlist items when fetching a wishlist.
+   * Default: false
+   */
+  includeWishlistItems?: boolean;
+
+  /**
+   * Number of wishlist items to include when `includeWishlistItems` is true.
+   * Default: 5
+   */
+  includeWishlistItemsTake?: number;
+
+  /**
+   * Whether guests (non-logged-in users) can have a wishlist.
+   * Default: false
+   */
+  allowGuestWishlist?: boolean;
+
+  /**
+   * Secret used for generating share tokens for wishlists.
+   * Default: 'default_secret'
+   */
+  shareTokenSecret?: string;
+};
 
 const optionsSchema = z.object({
   wishlistFields: z.array(z.string()).optional(),
@@ -18,15 +62,17 @@ const optionsSchema = z.object({
   shareTokenSecret: z.string().default("default_secret"),
 });
 
-export type AlphabiteWishlistPluginOptions = z.infer<typeof optionsSchema>;
+export type AlphabiteWishlistPluginOptionsType = z.infer<typeof optionsSchema>;
 
 export default class WishlistModuleService extends MedusaService({
   Wishlist,
   WishlistItem,
 }) {
-  public _options: AlphabiteWishlistPluginOptions;
+  public _options: AlphabiteWishlistPluginOptionsType;
 
-  static validateOptions(_options: AlphabiteWishlistPluginOptions): void | never {
+  static validateOptions(
+    _options: AlphabiteWishlistPluginOptionsType
+  ): void | never {
     const parsed = optionsSchema.safeParse(_options);
     if (!parsed.success) {
       throw new MedusaError(
@@ -36,7 +82,7 @@ export default class WishlistModuleService extends MedusaService({
     }
   }
 
-  constructor({}, options: AlphabiteWishlistPluginOptions) {
+  constructor({}, options: AlphabiteWishlistPluginOptionsType) {
     super(...arguments);
     this._options = options || {};
   }
@@ -59,36 +105,59 @@ export default class WishlistModuleService extends MedusaService({
 
   @InjectManager()
   async totalItemsCount(
-    { customer_id, wishlist_id }: { customer_id?: string; wishlist_id?: string },
+    {
+      customer_id,
+      wishlist_id,
+    }: { customer_id?: string; wishlist_id?: string },
     @MedusaContext() context: Context<EntityManager> = {}
   ): Promise<number> {
     const wishlist_items_count = await context.manager?.count(WishlistItem, {
       wishlist: {
         ...(customer_id && { customer_id }),
-        ...(wishlist_id && !customer_id && { id: wishlist_id, customer_id: null }),
+        ...(wishlist_id &&
+          !customer_id && { id: wishlist_id, customer_id: null }),
       },
     });
 
     return Number(wishlist_items_count || 0);
   }
 
-  async createShareToken({ wishlist_id }: { wishlist_id: string }): Promise<string> {
-    const shareToken = jwt.sign({ wishlist_id }, this._options.shareTokenSecret, { expiresIn: "7d" });
+  async createShareToken({
+    wishlist_id,
+  }: {
+    wishlist_id: string;
+  }): Promise<string> {
+    const shareToken = jwt.sign(
+      { wishlist_id },
+      this._options.shareTokenSecret,
+      { expiresIn: "7d" }
+    );
 
     return shareToken;
   }
 
-  async validateToken(shareToken: string): Promise<{ wishlist_id: string } | null> {
+  async validateToken(
+    shareToken: string
+  ): Promise<{ wishlist_id: string } | null> {
     const decoded = jwt.verify(shareToken, this._options.shareTokenSecret);
 
     return decoded as { wishlist_id: string };
   }
 
-  async importWishlist({ id, customer_id }: { id: string; customer_id?: string }): Promise<WishlistType> {
+  async importWishlist({
+    id,
+    customer_id,
+  }: {
+    id: string;
+    customer_id?: string;
+  }): Promise<WishlistType> {
     const wishlist = await this.retrieveWishlist(id, { relations: ["items"] });
 
     if (!wishlist) {
-      throw new MedusaError(MedusaError.Types.NOT_FOUND, `Wishlist with ID ${id} not found`);
+      throw new MedusaError(
+        MedusaError.Types.NOT_FOUND,
+        `Wishlist with ID ${id} not found`
+      );
     }
 
     const newWishlist = await this.createWishlists({
@@ -98,7 +167,10 @@ export default class WishlistModuleService extends MedusaService({
     });
 
     if (!newWishlist) {
-      throw new MedusaError(MedusaError.Types.INVALID_DATA, `Failed to create new wishlist for import`);
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        `Failed to create new wishlist for import`
+      );
     }
 
     await Promise.all(
