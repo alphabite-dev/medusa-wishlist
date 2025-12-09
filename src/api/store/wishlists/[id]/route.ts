@@ -1,11 +1,18 @@
 import { AuthenticatedMedusaRequest, MedusaRequest, MedusaResponse } from "@medusajs/framework";
-import { MedusaError } from "@medusajs/framework/utils";
+import {
+  getVariantAvailability,
+  MedusaError,
+  QueryContext,
+  VariantAvailabilityResult,
+} from "@medusajs/framework/utils";
 import WishlistModuleService from "../../../../modules/wishlist/service";
 import { UpdateWishlistInput } from "../validators";
 import { Wishlist } from "../types";
 import { WISHLIST_MODULE } from "../../../../modules/wishlist";
 import { RetrieveWishlistQuery } from "./validators";
-import { defaultItemsFields } from "../../../../utils/utils";
+import { defaultFields, defaultItemsFields } from "../../../../utils/utils";
+import { WishlistItem } from "../../../../modules/wishlist/models/wishlist-item";
+import { CalculatedPriceSet, ProductVariantDTO } from "@medusajs/framework/types";
 
 //-----Retrieves a specific wishlist by ID-----//
 export async function GET(req: AuthenticatedMedusaRequest<any, RetrieveWishlistQuery>, res: MedusaResponse<Wishlist>) {
@@ -13,7 +20,7 @@ export async function GET(req: AuthenticatedMedusaRequest<any, RetrieveWishlistQ
 
   const { id } = req.params;
   const customer_id = req?.auth_context?.actor_id;
-  const { items_fields } = req.validatedQuery;
+  const { items_fields, include_calculated_price, include_inventory_count } = req.validatedQuery;
 
   const wishlistService = req.scope.resolve<WishlistModuleService>(WISHLIST_MODULE);
   const options = wishlistService._options;
@@ -31,7 +38,7 @@ export async function GET(req: AuthenticatedMedusaRequest<any, RetrieveWishlistQ
         id,
       },
       ...req.queryConfig,
-      fields: ["*", ...(options?.wishlistFields || [])],
+      fields: [...defaultFields, ...(req.queryConfig?.fields || []), ...(options?.wishlistFields || [])],
     });
 
     const wishlist = data?.[0];
@@ -54,7 +61,82 @@ export async function GET(req: AuthenticatedMedusaRequest<any, RetrieveWishlistQ
       },
     });
 
-    return res.status(200).json({ ...wishlist, items_count: items_metadata?.count, items });
+    let variantsAvailability: VariantAvailabilityResult = {};
+
+    if (include_inventory_count) {
+      variantsAvailability = await getVariantAvailability(query, {
+        sales_channel_id: wishlist.sales_channel_id,
+        variant_ids: items.map((i) => i.product_variant_id),
+      });
+
+      console.log(variantsAvailability);
+    }
+
+    let variantsPrices: Record<string, CalculatedPriceSet> = {};
+
+    if (include_calculated_price) {
+      for (const item of items as (WishlistItem & { product_variant: ProductVariantDTO })[]) {
+        const { data: products } = await query.graph({
+          entity: "product",
+          fields: ["id", "variants.id", "variants.calculated_price.*"],
+          // narrow to a product that contains your variant
+          filters: {
+            variants: {
+              id: item.product_variant_id,
+            },
+          },
+          context: {
+            variants: {
+              calculated_price: QueryContext({
+                region_id: "reg_01J3MRPDNXXXDSCC76Y6YCZARS",
+                currency_code: "eur",
+              }),
+            },
+          },
+        });
+
+        products.map((product) => {
+          product.variants.map((variant: any) => {
+            variantsPrices[variant.id] = variant.calculated_price;
+          });
+        });
+      }
+    }
+
+    const enrichedItems = items.map(
+      (
+        item: WishlistItem & {
+          product_variant: ProductVariantDTO & {
+            calculated_price: CalculatedPriceSet | null;
+            availability: number | null;
+          };
+        }
+      ) => {
+        const availability = variantsAvailability[item.product_variant_id]?.availability;
+        const calculated_price = variantsPrices[item.product_variant_id];
+
+        let enrichedItem = { ...item };
+
+        if (include_inventory_count) {
+          enrichedItem.product_variant.availability = availability || null;
+        }
+
+        if (include_calculated_price) {
+          item.product_variant.calculated_price = calculated_price || null;
+        }
+
+        return {
+          ...item,
+          product_variant: {
+            ...item.product_variant,
+            availability,
+            calculated_price,
+          },
+        };
+      }
+    );
+
+    return res.status(200).json({ ...wishlist, items_count: items_metadata?.count, items: enrichedItems });
   } catch (error) {
     logger.error("Error fetching wishlists:", error);
 

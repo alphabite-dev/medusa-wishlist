@@ -1,5 +1,6 @@
 import { model } from "@medusajs/framework/utils";
 import { WishlistItem } from "./wishlist-item";
+import { InferTypeOf } from "@medusajs/framework/types";
 
 export const Wishlist = model
   .define("wishlist", {
@@ -15,3 +16,5 @@ export const Wishlist = model
       where: { customer_id: { $ne: null } },
     },
   ]);
+
+export type WishlistType = InferTypeOf<typeof Wishlist>;

@@ -11,15 +11,14 @@ export const getPagination = (opts?: RemoteQueryFunctionReturnPagination) => {
   return { count, nextPage, currentPage, prevPage, totalPages };
 };
 
+export const defaultFields = ["id", "name", "customer_id", "sales_channel_id"];
+
 export const defaultItemsFields = [
   "id",
-  "product_id",
   "wishlist_id",
-  "created_at",
-  "updated_at",
-  "deleted_at",
-  "product_variant.*",
-  "product_variant.prices.*",
-  "product_variant.calculated_price",
+  "product_variant.id",
+  "product_variant.title",
+  "product_variant.product.id",
+  "product_variant.product.handle",
   "product_variant.product.thumbnail",
 ];

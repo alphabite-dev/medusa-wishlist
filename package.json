@@ -1,6 +1,6 @@
 {
   "name": "@alphabite/medusa-wishlist",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "Alphabite's Medusa Wishlist Plugin",
   "author": "Alphabite (https://alphabite.io)",
   "license": "MIT",
@@ -20,7 +20,6 @@
     "./workflows": "./.medusa/server/src/workflows/index.js",
     "./.medusa/server/src/modules/*": "./.medusa/server/src/modules/*/index.js",
     "./modules/*": "./.medusa/server/src/modules/*/index.js",
-    "./providers/*": "./.medusa/server/src/providers/*/index.js",
     "./utils/*": "./.medusa/server/src/utils/*/index.js",
     "./admin": {
       "import": "./.medusa/server/src/admin/index.mjs",
@@ -45,7 +44,8 @@
   "scripts": {
     "build": "medusa plugin:build",
     "dev": "medusa plugin:develop",
-    "prepublishOnly": "medusa plugin:build"
+    "prepublishOnly": "medusa plugin:build",
+    "generate:openapi": "npx postman-to-openapi alphabite-wishlist-postman.json -o openapi.yaml"
   },
   "devDependencies": {
     "@medusajs/admin-sdk": "2.8.3",
