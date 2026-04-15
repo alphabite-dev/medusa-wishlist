@@ -10,7 +10,7 @@ import { MedusaError } from "@medusajs/framework/utils";
 
 export const GET = async (
   req: AuthenticatedMedusaRequest,
-  res: MedusaResponse<PaginatedOutput<WishlistItem>>
+  res: MedusaResponse<PaginatedOutput<WishlistItem>>,
 ) => {
   const logger = req.scope.resolve("logger");
 
@@ -24,7 +24,7 @@ export const GET = async (
   if (!options.allowGuestWishlist && !customer_id) {
     throw new MedusaError(
       MedusaError.Types.UNAUTHORIZED,
-      "Guest wishlists are now allowed"
+      "Guest wishlists are now allowed",
     );
   }
 
@@ -50,7 +50,7 @@ export const GET = async (
     ) {
       throw new MedusaError(
         MedusaError.Types.UNAUTHORIZED,
-        "You are not authorized to access this wishlist items"
+        "You are not authorized to access this wishlist items",
       );
     }
 
@@ -58,7 +58,7 @@ export const GET = async (
       data:
         wishlist_items.length > 0
           ? wishlist_items.map(
-              ({ wishlist, ...wishlist_item }) => wishlist_item
+              ({ wishlist, ...wishlist_item }) => wishlist_item,
             )
           : [],
       skip: metadata?.skip || 0,
@@ -66,7 +66,7 @@ export const GET = async (
       ...getPagination(metadata),
     });
   } catch (error) {
-    logger.error("Error fetching wishlist items:", error);
+    logger.error(`Error fetching wishlist items:${JSON.stringify(error)}`);
 
     return res.status(500).end();
   }

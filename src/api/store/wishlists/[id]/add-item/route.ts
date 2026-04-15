@@ -1,4 +1,7 @@
-import { AuthenticatedMedusaRequest, MedusaResponse } from "@medusajs/framework";
+import {
+  AuthenticatedMedusaRequest,
+  MedusaResponse,
+} from "@medusajs/framework";
 import WishlistModuleService from "../../../../../modules/wishlist/service";
 import { WishlistItem } from "../../types";
 import { WISHLIST_MODULE } from "../../../../../modules/wishlist";
@@ -7,7 +10,7 @@ import { MedusaError } from "@medusajs/framework/utils";
 
 export const POST = async (
   req: AuthenticatedMedusaRequest<AddItemToWishlistInput>,
-  res: MedusaResponse<WishlistItem>
+  res: MedusaResponse<WishlistItem>,
 ) => {
   const logger = req.scope.resolve("logger");
 
@@ -15,11 +18,15 @@ export const POST = async (
   const { id } = req.params;
   const customer_id = req?.auth_context?.actor_id;
 
-  const wishlistService = req.scope.resolve<WishlistModuleService>(WISHLIST_MODULE);
+  const wishlistService =
+    req.scope.resolve<WishlistModuleService>(WISHLIST_MODULE);
   const options = wishlistService._options;
 
   if (!options.allowGuestWishlist && !customer_id) {
-    throw new MedusaError(MedusaError.Types.UNAUTHORIZED, "Guest wishlists are now allowed");
+    throw new MedusaError(
+      MedusaError.Types.UNAUTHORIZED,
+      "Guest wishlists are now allowed",
+    );
   }
 
   try {
@@ -32,15 +39,39 @@ export const POST = async (
     });
 
     if (wishlist[0]?.customer_id && !customer_id) {
-      throw new MedusaError(MedusaError.Types.UNAUTHORIZED, "You are not authorized to add items to this wishlist");
+      throw new MedusaError(
+        MedusaError.Types.UNAUTHORIZED,
+        "You are not authorized to add items to this wishlist",
+      );
     }
 
-    if (customer_id && wishlist[0]?.customer_id && wishlist[0]?.customer_id !== customer_id) {
-      throw new MedusaError(MedusaError.Types.UNAUTHORIZED, "You are not authorized to add items to this wishlist");
+    if (
+      customer_id &&
+      wishlist[0]?.customer_id &&
+      wishlist[0]?.customer_id !== customer_id
+    ) {
+      throw new MedusaError(
+        MedusaError.Types.UNAUTHORIZED,
+        "You are not authorized to add items to this wishlist",
+      );
+    }
+
+    const { data: variants } = await query.graph({
+      entity: "product_variant",
+      filters: { id: product_variant_id },
+      fields: ["id", "product_id"],
+    });
+
+    if (!variants.length) {
+      throw new MedusaError(
+        MedusaError.Types.NOT_FOUND,
+        `Product variant with ID ${product_variant_id} not found`,
+      );
     }
 
     const created_item = await wishlistService.createWishlistItems({
       product_variant_id,
+      product_id: variants[0].product_id,
       wishlist_id: id,
     });
 
@@ -50,12 +81,17 @@ export const POST = async (
         id: created_item.id,
       },
       ...req.queryConfig,
-      fields: [...(req.queryConfig.fields || []), ...(options?.wishlistItemsFields || [])],
+      fields: [
+        ...(req.queryConfig.fields || []),
+        ...(options?.wishlistItemsFields || []),
+      ],
     });
 
     return res.status(201).json(enriched_wishlist_item[0]);
   } catch (error) {
-    logger.error("Add item to wishlist failed", error);
+    logger.error(
+      `Add item to wishlist failed with error:${JSON.stringify(error)}`,
+    );
 
     return res.status(500).end();
   }

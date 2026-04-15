@@ -71,13 +71,13 @@ export default class WishlistModuleService extends MedusaService({
   public _options: AlphabiteWishlistPluginOptionsType;
 
   static validateOptions(
-    _options: AlphabiteWishlistPluginOptionsType
+    _options: AlphabiteWishlistPluginOptionsType,
   ): void | never {
     const parsed = optionsSchema.safeParse(_options);
     if (!parsed.success) {
       throw new MedusaError(
         MedusaError.Types.INVALID_DATA,
-        `Invalid options provided for WishlistModuleService: ${parsed.error.message}`
+        `Invalid options provided for WishlistModuleService: ${parsed.error.message}`,
       );
     }
   }
@@ -90,7 +90,7 @@ export default class WishlistModuleService extends MedusaService({
   @InjectManager()
   async getWishlistCountsOfProduct(
     productId: string,
-    @MedusaContext() context: Context<EntityManager> = {}
+    @MedusaContext() context: Context<EntityManager> = {},
   ): Promise<number> {
     return (
       (
@@ -109,7 +109,7 @@ export default class WishlistModuleService extends MedusaService({
       customer_id,
       wishlist_id,
     }: { customer_id?: string; wishlist_id?: string },
-    @MedusaContext() context: Context<EntityManager> = {}
+    @MedusaContext() context: Context<EntityManager> = {},
   ): Promise<number> {
     const wishlist_items_count = await context.manager?.count(WishlistItem, {
       wishlist: {
@@ -130,14 +130,14 @@ export default class WishlistModuleService extends MedusaService({
     const shareToken = jwt.sign(
       { wishlist_id },
       this._options.shareTokenSecret,
-      { expiresIn: "7d" }
+      { expiresIn: "7d" },
     );
 
     return shareToken;
   }
 
   async validateToken(
-    shareToken: string
+    shareToken: string,
   ): Promise<{ wishlist_id: string } | null> {
     const decoded = jwt.verify(shareToken, this._options.shareTokenSecret);
 
@@ -156,7 +156,7 @@ export default class WishlistModuleService extends MedusaService({
     if (!wishlist) {
       throw new MedusaError(
         MedusaError.Types.NOT_FOUND,
-        `Wishlist with ID ${id} not found`
+        `Wishlist with ID ${id} not found`,
       );
     }
 
@@ -169,7 +169,7 @@ export default class WishlistModuleService extends MedusaService({
     if (!newWishlist) {
       throw new MedusaError(
         MedusaError.Types.INVALID_DATA,
-        `Failed to create new wishlist for import`
+        `Failed to create new wishlist for import`,
       );
     }
 
@@ -177,9 +177,10 @@ export default class WishlistModuleService extends MedusaService({
       wishlist.items.map(async (item) => {
         return this.createWishlistItems({
           product_variant_id: item.product_variant_id,
+          product_id: item.product_id,
           wishlist_id: newWishlist.id,
         });
-      })
+      }),
     );
 
     return { ...newWishlist, items_count: wishlist.items.length, items: [] };

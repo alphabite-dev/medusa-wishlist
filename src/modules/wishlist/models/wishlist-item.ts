@@ -6,6 +6,7 @@ export const WishlistItem = model
   .define("wishlist_item", {
     id: model.id({ prefix: "wli" }).primaryKey(),
     product_variant_id: model.text(),
+    product_id: model.text(),
     wishlist: model.belongsTo(() => Wishlist, {
       mappedBy: "items",
     }),
