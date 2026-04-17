@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "@medusajs/framework/zod";
 
 export const RetrieveWishlistQuerySchema = z.object({
   items_fields: z.array(z.string()).optional(),

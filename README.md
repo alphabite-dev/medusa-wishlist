@@ -9,6 +9,31 @@ This plugin ships with:
 
 ---
 
+## ⚠️ Version Compatibility
+
+Please install the plugin version that matches your Medusa version:
+
+| Medusa Version   | Plugin Version | Install Command                              |
+|------------------|----------------|----------------------------------------------|
+| `2.13.*` and above | `latest`       | `npm install @alphabite/medusa-wishlist`     |
+| Below `2.13.0`   | `0.5.7`        | `npm install @alphabite/medusa-wishlist@0.5.7` |
+
+### Installing the latest version (Medusa 2.13.* and above)
+
+```bash
+npm install @alphabite/medusa-wishlist
+```
+
+### Installing version 0.5.7 (Medusa versions below 2.13.0)
+
+```bash
+npm install @alphabite/medusa-wishlist@0.5.7
+```
+
+> ℹ️ Using a mismatched version may result in compatibility issues. Make sure to check your Medusa version (`npm list @medusajs/medusa`) before installing.
+
+---
+
 ## 📚 Table of Contents
 
 - [✨ Features](#-features)

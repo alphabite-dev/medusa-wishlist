@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "@medusajs/framework/zod";
 
 export const ImportWishlistInputSchema = z.object({
   share_token: z.string().min(1, "Share token is required"),
