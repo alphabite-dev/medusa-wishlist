@@ -9,7 +9,7 @@ import { InjectManager } from "@medusajs/framework/utils";
 import { Context } from "@medusajs/framework/types";
 import { EntityManager } from "@mikro-orm/knex";
 import jwt from "jsonwebtoken";
-import z from "zod";
+import { z } from "@medusajs/framework/zod";
 import { Wishlist as WishlistType } from "../../api/store/wishlists/types";
 
 /**
