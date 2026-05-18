@@ -3,6 +3,7 @@
 The **Alphabite Wishlist Plugin** is the most feature-complete wishlist system for [MedusaJS](https://medusajs.com). It supports both authenticated and guest users, multiple wishlists per user, and a full-featured SDK client for frontend integration.
 
 This plugin ships with:
+
 - 🔌 A fully typed JS SDK plugin
 - 📭 A Postman collection
 - ✅ Support for guest & authenticated customers
@@ -13,15 +14,22 @@ This plugin ships with:
 
 Please install the plugin version that matches your Medusa version:
 
-| Medusa Version   | Plugin Version | Install Command                              |
-|------------------|----------------|----------------------------------------------|
-| `2.13.*` and above | `latest`       | `npm install @alphabite/medusa-wishlist`     |
-| Below `2.13.0`   | `0.5.7`        | `npm install @alphabite/medusa-wishlist@0.5.7` |
+| Medusa Version     | Plugin Version | Install Command                                |
+| ------------------ | -------------- | ---------------------------------------------- |
+| `2.14.*` and above | `latest`       | `npm install @alphabite/medusa-wishlist`       |
+| `2.13.*`           | `0.5.8`        | `npm install @alphabite/medusa-wishlist@0.5.8` |
+| Below `2.13.0`     | `0.5.7`        | `npm install @alphabite/medusa-wishlist@0.5.7` |
 
-### Installing the latest version (Medusa 2.13.* and above)
+### Installing the latest version (Medusa 2.14.\* and above)
 
 ```bash
 npm install @alphabite/medusa-wishlist
+```
+
+### Installing version 0.5.8 (Medusa 2.13.\*)
+
+```bash
+npm install @alphabite/medusa-wishlist@0.5.8
 ```
 
 ### Installing version 0.5.7 (Medusa versions below 2.13.0)
@@ -50,11 +58,11 @@ npm install @alphabite/medusa-wishlist@0.5.7
 
 ## ✨ Features
 
-- ✅ Multiple wishlists per customer  
-- ✅ Add/remove items to/from any wishlist  
-- ✅ Guest wishlist supported + transfer when registered 
-- ✅ Fully typed Medusa JS SDK integration with our SDK client 
-- ✅ Pagination and filtering built-in  
+- ✅ Multiple wishlists per customer
+- ✅ Add/remove items to/from any wishlist
+- ✅ Guest wishlist supported + transfer when registered
+- ✅ Fully typed Medusa JS SDK integration with our SDK client
+- ✅ Pagination and filtering built-in
 
 ---
 
@@ -71,7 +79,7 @@ In your `medusa-config.js`, register the plugin:
 ```js
 const plugins = [
   {
-    resolve: '@alphabite/medusa-wishlist',
+    resolve: "@alphabite/medusa-wishlist",
     options: {
       // all are optional, read bellow about default values
       wishlistFields: [],
@@ -81,20 +89,20 @@ const plugins = [
       allowGuestWishlist: true,
     },
   },
-]
+];
 ```
 
 ---
 
 ## 🔧 Plugin Options
 
-| Option                    | Type       | Default | Description                                                              |
-|---------------------------|------------|---------|--------------------------------------------------------------------------|
-| `wishlistFields`                 | `string[]` | `["items.*", "items.product_variant.*", "items.product_variant.prices.*", "items.product_variant.product.thumbnail", "items.product_variant.product.id"]`    | Selectively include Medusa product or product variant fields on wishlist list/retrieve endpoints that have wishlist items included             |
-| `wishlistItemsFields`                 | `string[]` | `["id", "product_id", "wishlist_id", "created_at", "wishlist.customer_id", "updated_at", "deleted_at", "product_variant.*", "product_variant.prices.*", "product_variant.calculated_price", "product_variant.product.thumbnail",]`    | Selectively include Medusa product or product variant fields on wishlist items list/retrieve endpoints             |
-| `includeWishlistItems`  | `boolean`  | `false` | Automatically populate wishlist items in `GET /store/wishlists`          |
-| `includeWishlistItemsTake` | `number` | `5`     | Limit number of items if `includeWishlistItems` is true                  |
-| `allowGuestWishlist`     | `boolean`  | `false` | Enables wishlist creation & usage without authentication (cookie-based)  |
+| Option                     | Type       | Default                                                                                                                                                                                                                            | Description                                                                                                                        |
+| -------------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `wishlistFields`           | `string[]` | `["items.*", "items.product_variant.*", "items.product_variant.prices.*", "items.product_variant.product.thumbnail", "items.product_variant.product.id"]`                                                                          | Selectively include Medusa product or product variant fields on wishlist list/retrieve endpoints that have wishlist items included |
+| `wishlistItemsFields`      | `string[]` | `["id", "product_id", "wishlist_id", "created_at", "wishlist.customer_id", "updated_at", "deleted_at", "product_variant.*", "product_variant.prices.*", "product_variant.calculated_price", "product_variant.product.thumbnail",]` | Selectively include Medusa product or product variant fields on wishlist items list/retrieve endpoints                             |
+| `includeWishlistItems`     | `boolean`  | `false`                                                                                                                                                                                                                            | Automatically populate wishlist items in `GET /store/wishlists`                                                                    |
+| `includeWishlistItemsTake` | `number`   | `5`                                                                                                                                                                                                                                | Limit number of items if `includeWishlistItems` is true                                                                            |
+| `allowGuestWishlist`       | `boolean`  | `false`                                                                                                                                                                                                                            | Enables wishlist creation & usage without authentication (cookie-based)                                                            |
 
 ---
 
@@ -102,17 +110,17 @@ const plugins = [
 
 All endpoints are available under `/store/wishlists`.
 
-| Method | Endpoint                                   | Auth           | Description                             |
-|--------|--------------------------------------------|----------------|-----------------------------------------|
-| GET    | `/store/wishlists`                         | ✅              | List wishlists for the current customer |
-| POST   | `/store/wishlists`                         | ➖ (optional)   | Create a new wishlist                   |
-| GET    | `/store/wishlists/:id`                     | ➖ (optional)   | Retrieve a wishlist by ID               |
-| PUT    | `/store/wishlists/:id`                     | ✅              | Update wishlist metadata                |
-| DELETE | `/store/wishlists/:id`                     | ✅              | Delete a wishlist                       |
-| POST   | `/store/wishlists/:id/transfer`            | ✅              | Transfer guest wishlist to logged-in user |
-| GET    | `/store/wishlists/:id/items`               | ➖ (optional)   | Get items in a wishlist                 |
-| POST   | `/store/wishlists/:id/add-item`            | ➖ (optional)   | Add an item to the wishlist             |
-| DELETE | `/store/wishlists/:id/items/:item_id`      | ➖ (optional)   | Remove an item from the wishlist        |
+| Method | Endpoint                              | Auth          | Description                               |
+| ------ | ------------------------------------- | ------------- | ----------------------------------------- |
+| GET    | `/store/wishlists`                    | ✅            | List wishlists for the current customer   |
+| POST   | `/store/wishlists`                    | ➖ (optional) | Create a new wishlist                     |
+| GET    | `/store/wishlists/:id`                | ➖ (optional) | Retrieve a wishlist by ID                 |
+| PUT    | `/store/wishlists/:id`                | ✅            | Update wishlist metadata                  |
+| DELETE | `/store/wishlists/:id`                | ✅            | Delete a wishlist                         |
+| POST   | `/store/wishlists/:id/transfer`       | ✅            | Transfer guest wishlist to logged-in user |
+| GET    | `/store/wishlists/:id/items`          | ➖ (optional) | Get items in a wishlist                   |
+| POST   | `/store/wishlists/:id/add-item`       | ➖ (optional) | Add an item to the wishlist               |
+| DELETE | `/store/wishlists/:id/items/:item_id` | ➖ (optional) | Remove an item from the wishlist          |
 
 ---
 
@@ -148,7 +156,6 @@ await sdk.alphabite.wishlist.addItem({
 const { data } = await sdk.alphabite.wishlist.listItems({ id: 'wishlist_id' })
 ```
 
-
 ---
 
 ## 🧪 Guest Wishlist Flow
@@ -161,7 +168,7 @@ Guest wishlists work like guest carts:
 4. When the user signs up or logs in, call the `transfer` endpoint to associate it:
 
 ```ts
-await medusa.alphabite.wishlist.transfer({ id: wishlistId })
+await medusa.alphabite.wishlist.transfer({ id: wishlistId });
 ```
 
 After that, the cookie is no longer needed.
