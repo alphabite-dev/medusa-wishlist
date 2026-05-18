@@ -5,13 +5,13 @@ import {
   QueryContext,
   VariantAvailabilityResult,
 } from "@medusajs/framework/utils";
-import WishlistModuleService from "../../../../modules/wishlist/service";
+import WishlistModuleService from "@/modules/wishlist/service";
 import { UpdateWishlistInput } from "../validators";
 import { Wishlist } from "../types";
-import { WISHLIST_MODULE } from "../../../../modules/wishlist";
+import { WISHLIST_MODULE } from "@/modules/wishlist";
 import { RetrieveWishlistQuery } from "./validators";
-import { defaultFields, defaultItemsFields } from "../../../../utils/utils";
-import { WishlistItem } from "../../../../modules/wishlist/models/wishlist-item";
+import { defaultFields, defaultItemsFields } from "@/utils/utils";
+import { WishlistItem } from "@/modules/wishlist/models/wishlist-item";
 import { CalculatedPriceSet, ProductVariantDTO } from "@medusajs/framework/types";
 
 //-----Retrieves a specific wishlist by ID-----//
