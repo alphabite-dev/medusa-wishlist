@@ -10,6 +10,9 @@ export const Wishlist = model
     sales_channel_id: model.text(),
     items: model.hasMany(() => WishlistItem),
   })
+  .cascades({
+    delete: ["items"],
+  })
   .indexes([
     {
       on: ["customer_id", "sales_channel_id"],
