@@ -5,12 +5,19 @@ import {
 } from "@medusajs/framework/utils";
 import { Wishlist } from "./models/wishlist";
 import { WishlistItem } from "./models/wishlist-item";
+import { WishlistSettings } from "./models/wishlist-settings";
 import { InjectManager } from "@medusajs/framework/utils";
 import { Context } from "@medusajs/framework/types";
 import { EntityManager } from "@mikro-orm/knex";
 import jwt from "jsonwebtoken";
 import { z } from "@medusajs/framework/zod";
 import { Wishlist as WishlistType } from "../../api/store/wishlists/types";
+import type {
+  WishlistSettingsView,
+  WishlistSettingsPatch,
+} from "./types/settings";
+
+const WISHLIST_SETTINGS_SINGLETON_ID = "wls_singleton";
 
 /**
  * Options for configuring the Alphabite Wishlist Plugin
@@ -67,6 +74,7 @@ export type AlphabiteWishlistPluginOptionsType = z.infer<typeof optionsSchema>;
 export default class WishlistModuleService extends MedusaService({
   Wishlist,
   WishlistItem,
+  WishlistSettings,
 }) {
   public _options: AlphabiteWishlistPluginOptionsType;
 
@@ -114,8 +122,8 @@ export default class WishlistModuleService extends MedusaService({
     const wishlist_items_count = await context.manager?.count(WishlistItem, {
       wishlist: {
         ...(customer_id && { customer_id }),
-        ...(wishlist_id &&
-          !customer_id && { id: wishlist_id, customer_id: null }),
+        ...(wishlist_id && { id: wishlist_id }),
+        ...(wishlist_id && !customer_id && { customer_id: null }),
       },
     });
 
@@ -184,5 +192,48 @@ export default class WishlistModuleService extends MedusaService({
     );
 
     return { ...newWishlist, items_count: wishlist.items.length, items: [] };
+  }
+
+  async getSettings(): Promise<WishlistSettingsView> {
+    const rows = await this.listWishlistSettings(
+      { id: WISHLIST_SETTINGS_SINGLETON_ID },
+      { take: 1 },
+    );
+    const row = rows[0];
+
+    if (!row) {
+      return {
+        allow_guest_wishlist: this._options?.allowGuestWishlist ?? false,
+        allow_multiple_wishlists: false,
+      };
+    }
+
+    return {
+      allow_guest_wishlist: row.allow_guest_wishlist,
+      allow_multiple_wishlists: row.allow_multiple_wishlists,
+    };
+  }
+
+  async updateSettings(
+    patch: WishlistSettingsPatch,
+  ): Promise<WishlistSettingsView> {
+    const writePatch: Record<string, boolean> = {};
+    if (typeof patch.allow_guest_wishlist === "boolean") {
+      writePatch.allow_guest_wishlist = patch.allow_guest_wishlist;
+    }
+    if (typeof patch.allow_multiple_wishlists === "boolean") {
+      writePatch.allow_multiple_wishlists = patch.allow_multiple_wishlists;
+    }
+
+    if (Object.keys(writePatch).length === 0) {
+      return this.getSettings();
+    }
+
+    await this.updateWishlistSettings({
+      id: WISHLIST_SETTINGS_SINGLETON_ID,
+      ...writePatch,
+    });
+
+    return this.getSettings();
   }
 }

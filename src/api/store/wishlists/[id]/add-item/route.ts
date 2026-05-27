@@ -22,10 +22,12 @@ export const POST = async (
     req.scope.resolve<WishlistModuleService>(WISHLIST_MODULE);
   const options = wishlistService._options;
 
-  if (!options.allowGuestWishlist && !customer_id) {
+  const settings = await wishlistService.getSettings();
+
+  if (!settings.allow_guest_wishlist && !customer_id) {
     throw new MedusaError(
       MedusaError.Types.UNAUTHORIZED,
-      "Guest wishlists are now allowed",
+      "Guest wishlists are not allowed",
     );
   }
 
@@ -37,6 +39,13 @@ export const POST = async (
       filters: { id },
       fields: ["id", "customer_id"],
     });
+
+    if (!settings.allow_guest_wishlist && wishlist[0]?.customer_id === null) {
+      throw new MedusaError(
+        MedusaError.Types.UNAUTHORIZED,
+        "Guest wishlists are not allowed",
+      );
+    }
 
     if (wishlist[0]?.customer_id && !customer_id) {
       throw new MedusaError(

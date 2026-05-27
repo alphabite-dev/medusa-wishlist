@@ -71,10 +71,27 @@ export async function POST(req: AuthenticatedMedusaRequest<CreateWishlistInput>,
   const { ...input } = req.body;
 
   const wishlistService = req.scope.resolve<WishlistModuleService>(WISHLIST_MODULE);
-  const options = wishlistService._options;
+  const settings = await wishlistService.getSettings();
 
-  if (!options.allowGuestWishlist && !customer_id) {
-    throw new MedusaError(MedusaError.Types.UNAUTHORIZED, "Guest wishlists are now allowed");
+  if (!settings.allow_guest_wishlist && !customer_id) {
+    throw new MedusaError(MedusaError.Types.UNAUTHORIZED, "Guest wishlists are not allowed");
+  }
+
+  // Multi-wishlist idempotency: if multi is disabled and the customer
+  // already has a list, return that list instead of creating another.
+  if (!settings.allow_multiple_wishlists && customer_id) {
+    const existing = await wishlistService.listWishlists(
+      { customer_id },
+      { take: 1 },
+    );
+    if (existing.length > 0) {
+      const list = existing[0];
+      return res.status(200).json({
+        ...list,
+        items_count: 0,
+        items: [],
+      } as Wishlist);
+    }
   }
 
   try {
