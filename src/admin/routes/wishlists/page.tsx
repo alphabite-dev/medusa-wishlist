@@ -11,7 +11,7 @@ import {
 } from "@medusajs/ui";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { sdk } from "../../../lib/sdk";
+import { sdk } from "../../lib/sdk";
 
 type WishlistSettingsView = {
   allow_guest_wishlist: boolean;
