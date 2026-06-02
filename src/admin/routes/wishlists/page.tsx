@@ -1,140 +1,27 @@
 import { defineRouteConfig } from "@medusajs/admin-sdk";
 import { Heart } from "@medusajs/icons";
-import {
-  Container,
-  Heading,
-  Switch,
-  Label,
-  Button,
-  Text,
-  toast,
-} from "@medusajs/ui";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
-import { sdk } from "../../lib/sdk";
+import { Container, Heading, Tabs } from "@medusajs/ui";
+import { WishlistAnalyticsTab } from "../../components/wishlist/analytics-tab";
+import { WishlistSettingsTab } from "../../components/wishlist/settings-tab";
 
-type WishlistSettingsView = {
-  allow_guest_wishlist: boolean;
-  allow_multiple_wishlists: boolean;
-};
-
-const QUERY_KEY = ["wishlist", "settings"] as const;
-
-const WishlistSettingsPage = () => {
-  const queryClient = useQueryClient();
-
-  const { data, isLoading } = useQuery({
-    queryKey: QUERY_KEY,
-    queryFn: () =>
-      sdk.client.fetch<WishlistSettingsView>("/admin/wishlists/settings", {
-        method: "GET",
-      }),
-  });
-
-  const [allowGuest, setAllowGuest] = useState(false);
-  const [allowMultiple, setAllowMultiple] = useState(false);
-
-  useEffect(() => {
-    if (data) {
-      setAllowGuest(data.allow_guest_wishlist);
-      setAllowMultiple(data.allow_multiple_wishlists);
-    }
-  }, [data]);
-
-  const isDirty =
-    data !== undefined &&
-    (allowGuest !== data.allow_guest_wishlist ||
-      allowMultiple !== data.allow_multiple_wishlists);
-
-  const update = useMutation({
-    mutationFn: (patch: Partial<WishlistSettingsView>) =>
-      sdk.client.fetch<WishlistSettingsView>("/admin/wishlists/settings", {
-        method: "PUT",
-        body: patch,
-      }),
-    onSuccess: (next) => {
-      queryClient.setQueryData(QUERY_KEY, next);
-      toast.success("Wishlist settings updated");
-    },
-    onError: (err: unknown) => {
-      const msg = err instanceof Error ? err.message : "Failed to update";
-      toast.error(msg);
-    },
-  });
-
-  const onSave = () => {
-    if (!data) return;
-    const patch: Partial<WishlistSettingsView> = {};
-    if (allowGuest !== data.allow_guest_wishlist) {
-      patch.allow_guest_wishlist = allowGuest;
-    }
-    if (allowMultiple !== data.allow_multiple_wishlists) {
-      patch.allow_multiple_wishlists = allowMultiple;
-    }
-    update.mutate(patch);
-  };
-
+const WishlistPage = () => {
   return (
-    <Container className="divide-y p-0">
-      <div className="flex items-center justify-between px-6 py-4">
-        <div>
+    <Container className="p-0">
+      <Tabs defaultValue="analytics">
+        <div className="flex flex-col gap-3 border-b px-6 py-4">
           <Heading level="h2">Wishlists</Heading>
-          <Text className="text-ui-fg-subtle">
-            Control who can use wishlists in your storefront.
-          </Text>
+          <Tabs.List>
+            <Tabs.Trigger value="analytics">Analytics</Tabs.Trigger>
+            <Tabs.Trigger value="settings">Settings</Tabs.Trigger>
+          </Tabs.List>
         </div>
-      </div>
-
-      <div className="flex flex-col gap-6 px-6 py-6">
-        {isLoading ? (
-          <Text className="text-ui-fg-subtle">Loading…</Text>
-        ) : (
-          <>
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex flex-col">
-                <Label htmlFor="allow-guest" className="font-medium">
-                  Allow guest wishlists
-                </Label>
-                <Text size="small" className="text-ui-fg-subtle">
-                  Anonymous visitors can save items to a wishlist.
-                </Text>
-              </div>
-              <Switch
-                id="allow-guest"
-                checked={allowGuest}
-                onCheckedChange={setAllowGuest}
-              />
-            </div>
-
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex flex-col">
-                <Label htmlFor="allow-multiple" className="font-medium">
-                  Allow multiple wishlists per customer
-                </Label>
-                <Text size="small" className="text-ui-fg-subtle">
-                  Signed-in customers can create more than one wishlist.
-                </Text>
-              </div>
-              <Switch
-                id="allow-multiple"
-                checked={allowMultiple}
-                onCheckedChange={setAllowMultiple}
-              />
-            </div>
-
-            <div className="flex justify-end">
-              <Button
-                variant="primary"
-                onClick={onSave}
-                disabled={!isDirty || update.isPending}
-                isLoading={update.isPending}
-              >
-                Save
-              </Button>
-            </div>
-          </>
-        )}
-      </div>
+        <Tabs.Content value="analytics">
+          <WishlistAnalyticsTab />
+        </Tabs.Content>
+        <Tabs.Content value="settings">
+          <WishlistSettingsTab />
+        </Tabs.Content>
+      </Tabs>
     </Container>
   );
 };
@@ -144,4 +31,4 @@ export const config = defineRouteConfig({
   icon: Heart,
 });
 
-export default WishlistSettingsPage;
+export default WishlistPage;

@@ -9,6 +9,7 @@ import { WishlistSettings } from "./models/wishlist-settings";
 import { InjectManager } from "@medusajs/framework/utils";
 import { Context } from "@medusajs/framework/types";
 import { EntityManager } from "@mikro-orm/knex";
+import type { Knex } from "knex";
 import jwt from "jsonwebtoken";
 import { z } from "@medusajs/framework/zod";
 import { Wishlist as WishlistType } from "../../api/store/wishlists/types";
@@ -16,6 +17,11 @@ import type {
   WishlistSettingsView,
   WishlistSettingsPatch,
 } from "./types/settings";
+import type {
+  WishlistAnalyticsParams,
+  WishlistAnalyticsView,
+  Delta,
+} from "./types/analytics";
 
 const WISHLIST_SETTINGS_SINGLETON_ID = "wls_singleton";
 
@@ -109,6 +115,253 @@ export default class WishlistModuleService extends MedusaService({
           .execute()
       )?.length || 0
     );
+  }
+
+  @InjectManager()
+  async getAnalytics(
+    params: WishlistAnalyticsParams = {},
+    @MedusaContext() context: Context<EntityManager> = {},
+  ): Promise<WishlistAnalyticsView> {
+    const knex = context.manager!.getConnection().getKnex();
+    const scopeItemsToChannel = <T extends Knex.QueryBuilder>(qb: T): T => {
+      if (channelId) {
+        qb.join("wishlist as w", "w.id", "wi.wishlist_id").where(
+          "w.sales_channel_id",
+          channelId,
+        );
+      }
+      return qb;
+    };
+    const n = (v: unknown): number => Number(v ?? 0);
+
+    const DAY_MS = 24 * 60 * 60 * 1000;
+    const to = params.to ? new Date(params.to) : new Date();
+    const from = params.from
+      ? new Date(params.from)
+      : new Date(to.getTime() - 30 * DAY_MS);
+    const periodMs = to.getTime() - from.getTime();
+    const prevFrom = new Date(from.getTime() - periodMs);
+    const prevTo = from;
+
+    const channelId = params.sales_channel_id;
+    const bucket = periodMs <= 60 * DAY_MS ? "day" : "week";
+
+    const mkDelta = (value: number, previous: number): Delta => ({
+      value,
+      previous,
+      delta_pct:
+        previous === 0
+          ? value > 0
+            ? 100
+            : 0
+          : Math.round(((value - previous) / previous) * 1000) / 10,
+    });
+
+    const countWishlists = async (lo: Date, hi: Date): Promise<number> => {
+      const qb = knex("wishlist")
+        .where("created_at", ">=", lo)
+        .andWhere("created_at", "<", hi);
+      if (channelId) qb.where("sales_channel_id", channelId);
+      const row = await qb.count<{ c: string }[]>("* as c");
+      return n(row[0]?.c);
+    };
+
+    const countItems = async (lo: Date, hi: Date): Promise<number> => {
+      const qb = scopeItemsToChannel(
+        knex("wishlist_item as wi")
+          .where("wi.created_at", ">=", lo)
+          .andWhere("wi.created_at", "<", hi),
+      );
+      const row = await qb.count<{ c: string }[]>("* as c");
+      return n(row[0]?.c);
+    };
+
+    const countUniqueCustomers = async (lo: Date, hi: Date): Promise<number> => {
+      const qb = knex("wishlist")
+        .where("created_at", ">=", lo)
+        .andWhere("created_at", "<", hi)
+        .whereNotNull("customer_id");
+      if (channelId) qb.where("sales_channel_id", channelId);
+      const row = await qb.countDistinct<{ c: string }[]>("customer_id as c");
+      return n(row[0]?.c);
+    };
+
+    const [
+      totalWishlists,
+      prevTotalWishlists,
+      totalItems,
+      prevTotalItems,
+      uniqueCustomers,
+      prevUniqueCustomers,
+    ] = await Promise.all([
+      countWishlists(from, to),
+      countWishlists(prevFrom, prevTo),
+      countItems(from, to),
+      countItems(prevFrom, prevTo),
+      countUniqueCustomers(from, to),
+      countUniqueCustomers(prevFrom, prevTo),
+    ]);
+
+    const activeQb = knex("wishlist as w")
+      .where("w.created_at", ">=", from)
+      .andWhere("w.created_at", "<", to)
+      .whereExists(function () {
+        this.select(knex.raw("1"))
+          .from("wishlist_item as wi")
+          .where("wi.wishlist_id", knex.ref("w.id"));
+      });
+    if (channelId) activeQb.where("w.sales_channel_id", channelId);
+    const activeWishlists = n(
+      (await activeQb.count<{ c: string }[]>("* as c"))[0]?.c,
+    );
+    const emptyWishlists = totalWishlists - activeWishlists;
+
+    const guestQb = knex("wishlist")
+      .where("created_at", ">=", from)
+      .andWhere("created_at", "<", to)
+      .whereNull("customer_id");
+    if (channelId) guestQb.where("sales_channel_id", channelId);
+    const guestWishlists = n(
+      (await guestQb.count<{ c: string }[]>("* as c"))[0]?.c,
+    );
+    const registeredWishlists = totalWishlists - guestWishlists;
+
+    const wishlistTrendQb = knex("wishlist")
+      .where("created_at", ">=", from)
+      .andWhere("created_at", "<", to)
+      .select(
+        knex.raw("to_char(date_trunc(?, created_at), 'YYYY-MM-DD') as date", [
+          bucket,
+        ]),
+      )
+      .count("* as count")
+      // Group/order by the SELECT ordinal: repeating date_trunc(?, ...) here
+      // would bind a *separate* parameter, which Postgres does not treat as the
+      // same expression as the one in SELECT ("must appear in GROUP BY").
+      .groupByRaw("1")
+      .orderByRaw("1");
+    if (channelId) wishlistTrendQb.where("sales_channel_id", channelId);
+
+    const itemTrendQb = scopeItemsToChannel(
+      knex("wishlist_item as wi")
+        .where("wi.created_at", ">=", from)
+        .andWhere("wi.created_at", "<", to)
+        .select(
+          knex.raw(
+            "to_char(date_trunc(?, wi.created_at), 'YYYY-MM-DD') as date",
+            [bucket],
+          ),
+        )
+        .count("* as count")
+        .groupByRaw("1")
+        .orderByRaw("1"),
+    );
+
+    const [wishlistTrendRows, itemTrendRows] = (await Promise.all([
+      wishlistTrendQb,
+      itemTrendQb,
+    ])) as [
+      { date: string; count: string }[],
+      { date: string; count: string }[],
+    ];
+
+    const trendMap = new Map<string, { wishlists: number; items: number }>();
+    for (const r of wishlistTrendRows) {
+      trendMap.set(r.date, { wishlists: n(r.count), items: 0 });
+    }
+    for (const r of itemTrendRows) {
+      const e = trendMap.get(r.date) ?? { wishlists: 0, items: 0 };
+      e.items = n(r.count);
+      trendMap.set(r.date, e);
+    }
+    const trend = [...trendMap.entries()]
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([date, v]) => ({ date, wishlists: v.wishlists, items: v.items }));
+
+    const topProductsQb = scopeItemsToChannel(
+      knex("wishlist_item as wi")
+        .where("wi.created_at", ">=", from)
+        .andWhere("wi.created_at", "<", to),
+    );
+    const topProductsRows = (await topProductsQb
+      .select("wi.product_id")
+      .countDistinct("wi.wishlist_id as wishlist_count")
+      .count("* as item_count")
+      .groupBy("wi.product_id")
+      .orderBy("wishlist_count", "desc")
+      .limit(10)) as {
+      product_id: string;
+      wishlist_count: string;
+      item_count: string;
+    }[];
+
+    const topVariantsQb = scopeItemsToChannel(
+      knex("wishlist_item as wi")
+        .where("wi.created_at", ">=", from)
+        .andWhere("wi.created_at", "<", to),
+    );
+    const topVariantsRows = (await topVariantsQb
+      .select("wi.product_variant_id", "wi.product_id")
+      .countDistinct("wi.wishlist_id as wishlist_count")
+      .groupBy("wi.product_variant_id", "wi.product_id")
+      .orderBy("wishlist_count", "desc")
+      .limit(10)) as {
+      product_variant_id: string;
+      product_id: string;
+      wishlist_count: string;
+    }[];
+
+    const bySalesChannel = channelId
+      ? []
+      : (
+          (await knex("wishlist")
+            .where("created_at", ">=", from)
+            .andWhere("created_at", "<", to)
+            .select("sales_channel_id")
+            .count("* as wishlist_count")
+            .groupBy("sales_channel_id")
+            .orderBy("wishlist_count", "desc")) as {
+            sales_channel_id: string;
+            wishlist_count: string;
+          }[]
+        ).map((r) => ({
+          sales_channel_id: r.sales_channel_id,
+          wishlist_count: n(r.wishlist_count),
+        }));
+
+    const avgCurrent = totalWishlists ? totalItems / totalWishlists : 0;
+    const avgPrev = prevTotalWishlists
+      ? prevTotalItems / prevTotalWishlists
+      : 0;
+
+    return {
+      range: { from: from.toISOString(), to: to.toISOString() },
+      kpis: {
+        total_wishlists: mkDelta(totalWishlists, prevTotalWishlists),
+        total_items: mkDelta(totalItems, prevTotalItems),
+        avg_items_per_wishlist: mkDelta(
+          Math.round(avgCurrent * 100) / 100,
+          Math.round(avgPrev * 100) / 100,
+        ),
+        active_wishlists: activeWishlists,
+        empty_wishlists: emptyWishlists,
+        guest_wishlists: guestWishlists,
+        registered_wishlists: registeredWishlists,
+        unique_customers: mkDelta(uniqueCustomers, prevUniqueCustomers),
+      },
+      trend,
+      top_products: topProductsRows.map((r) => ({
+        product_id: r.product_id,
+        wishlist_count: n(r.wishlist_count),
+        item_count: n(r.item_count),
+      })),
+      top_variants: topVariantsRows.map((r) => ({
+        product_variant_id: r.product_variant_id,
+        product_id: r.product_id,
+        wishlist_count: n(r.wishlist_count),
+      })),
+      by_sales_channel: bySalesChannel,
+    };
   }
 
   @InjectManager()

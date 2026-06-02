@@ -47,6 +47,7 @@ npm install @alphabite/medusa-wishlist@0.5.7
 - [✨ Features](#-features)
 - [📦 Installation](#-installation)
 - [🔧 Plugin Options](#-plugin-options)
+- [🛠️ Admin](#-admin)
 - [📦 API Endpoints](#-api-endpoints)
 - [🧑‍💻 SDK Usage](#-sdk-usage)
 - [🧪 Guest Wishlist Flow](#-guest-wishlist-flow)
@@ -63,6 +64,7 @@ npm install @alphabite/medusa-wishlist@0.5.7
 - ✅ Guest wishlist supported + transfer when registered
 - ✅ Fully typed Medusa JS SDK integration with our SDK client
 - ✅ Pagination and filtering built-in
+- ✅ Admin page with **Settings** + **Analytics** tabs
 
 ---
 
@@ -103,6 +105,18 @@ const plugins = [
 | `includeWishlistItems`     | `boolean`  | `false`                                                                                                                                                                                                                            | Automatically populate wishlist items in `GET /store/wishlists`                                                                    |
 | `includeWishlistItemsTake` | `number`   | `5`                                                                                                                                                                                                                                | Limit number of items if `includeWishlistItems` is true                                                                            |
 | `allowGuestWishlist`       | `boolean`  | `false`                                                                                                                                                                                                                            | Enables wishlist creation & usage without authentication (cookie-based)                                                            |
+
+---
+
+## 🛠️ Admin
+
+The plugin adds a **Wishlists** page to the admin sidebar (`/app/wishlists`) with
+two tabs: **Settings** (guest / multiple-wishlist toggles) and **Analytics** (a
+read-only dashboard of KPIs, an activity trend, and the most-wishlisted products
+and variants).
+
+See [docs/admin-analytics.md](docs/admin-analytics.md) for the analytics endpoint
+and response shape.
 
 ---
 
