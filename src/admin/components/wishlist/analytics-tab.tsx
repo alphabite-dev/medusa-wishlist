@@ -31,11 +31,6 @@ type AnalyticsResponse = {
     title: string;
     wishlist_count: number;
   }>;
-  by_sales_channel: Array<{
-    sales_channel_id: string;
-    name: string;
-    wishlist_count: number;
-  }>;
 };
 
 const RANGE_PRESETS: Record<string, number> = {
@@ -148,21 +143,23 @@ export const WishlistAnalyticsTab = () => {
             </Select.Content>
           </Select>
         </div>
-        <div className="w-full sm:w-64">
-          <Select value={channelId} onValueChange={setChannelId}>
-            <Select.Trigger>
-              <Select.Value placeholder="All sales channels" />
-            </Select.Trigger>
-            <Select.Content>
-              <Select.Item value="all">All sales channels</Select.Item>
-              {channelsRes?.sales_channels?.map((c) => (
-                <Select.Item key={c.id} value={c.id}>
-                  {c.name}
-                </Select.Item>
-              ))}
-            </Select.Content>
-          </Select>
-        </div>
+        {(channelsRes?.sales_channels?.length ?? 0) > 1 && (
+          <div className="w-full sm:w-64">
+            <Select value={channelId} onValueChange={setChannelId}>
+              <Select.Trigger>
+                <Select.Value placeholder="All sales channels" />
+              </Select.Trigger>
+              <Select.Content>
+                <Select.Item value="all">All sales channels</Select.Item>
+                {channelsRes?.sales_channels?.map((c) => (
+                  <Select.Item key={c.id} value={c.id}>
+                    {c.name}
+                  </Select.Item>
+                ))}
+              </Select.Content>
+            </Select>
+          </div>
+        )}
       </div>
 
       {!hasData ? (
@@ -310,32 +307,6 @@ export const WishlistAnalyticsTab = () => {
               </Table.Body>
             </Table>
           </div>
-
-          {data.by_sales_channel.length > 0 && (
-            <div className="flex flex-col gap-2">
-              <Heading level="h3">Wishlists by sales channel</Heading>
-              <Table>
-                <Table.Header>
-                  <Table.Row>
-                    <Table.HeaderCell>Channel</Table.HeaderCell>
-                    <Table.HeaderCell className="text-right">
-                      Wishlists
-                    </Table.HeaderCell>
-                  </Table.Row>
-                </Table.Header>
-                <Table.Body>
-                  {data.by_sales_channel.map((c) => (
-                    <Table.Row key={c.sales_channel_id}>
-                      <Table.Cell>{c.name}</Table.Cell>
-                      <Table.Cell className="text-right">
-                        {c.wishlist_count}
-                      </Table.Cell>
-                    </Table.Row>
-                  ))}
-                </Table.Body>
-              </Table>
-            </div>
-          )}
         </>
       )}
     </div>

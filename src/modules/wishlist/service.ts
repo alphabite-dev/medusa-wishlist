@@ -311,24 +311,6 @@ export default class WishlistModuleService extends MedusaService({
       wishlist_count: string;
     }[];
 
-    const bySalesChannel = channelId
-      ? []
-      : (
-          (await knex("wishlist")
-            .where("created_at", ">=", from)
-            .andWhere("created_at", "<", to)
-            .select("sales_channel_id")
-            .count("* as wishlist_count")
-            .groupBy("sales_channel_id")
-            .orderBy("wishlist_count", "desc")) as {
-            sales_channel_id: string;
-            wishlist_count: string;
-          }[]
-        ).map((r) => ({
-          sales_channel_id: r.sales_channel_id,
-          wishlist_count: n(r.wishlist_count),
-        }));
-
     const avgCurrent = totalWishlists ? totalItems / totalWishlists : 0;
     const avgPrev = prevTotalWishlists
       ? prevTotalItems / prevTotalWishlists
@@ -360,7 +342,6 @@ export default class WishlistModuleService extends MedusaService({
         product_id: r.product_id,
         wishlist_count: n(r.wishlist_count),
       })),
-      by_sales_channel: bySalesChannel,
     };
   }
 

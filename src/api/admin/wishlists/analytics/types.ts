@@ -2,7 +2,7 @@ import type { WishlistAnalyticsView } from "../../../../modules/wishlist/types/a
 
 export type WishlistAnalyticsResponse = Omit<
   WishlistAnalyticsView,
-  "top_products" | "top_variants" | "by_sales_channel"
+  "top_products" | "top_variants"
 > & {
   top_products: Array<{
     product_id: string;
@@ -15,11 +15,6 @@ export type WishlistAnalyticsResponse = Omit<
     product_variant_id: string;
     product_id: string;
     title: string;
-    wishlist_count: number;
-  }>;
-  by_sales_channel: Array<{
-    sales_channel_id: string;
-    name: string;
     wishlist_count: number;
   }>;
 };

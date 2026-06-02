@@ -7,7 +7,6 @@ import type { WishlistAnalyticsResponse } from "./types";
 
 type ProductRow = { id: string; title: string; thumbnail: string | null };
 type VariantRow = { id: string; title: string };
-type ChannelRow = { id: string; name: string };
 
 export async function GET(req: MedusaRequest, res: MedusaResponse) {
   const logger = req.scope.resolve(ContainerRegistrationKeys.LOGGER);
@@ -27,9 +26,8 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
 
     const productIds = view.top_products.map((p) => p.product_id);
     const variantIds = view.top_variants.map((v) => v.product_variant_id);
-    const channelIds = view.by_sales_channel.map((c) => c.sales_channel_id);
 
-    const [products, variants, channels] = await Promise.all([
+    const [products, variants] = await Promise.all([
       productIds.length
         ? query.graph({
             entity: "product",
@@ -44,22 +42,13 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
             filters: { id: variantIds },
           })
         : Promise.resolve({ data: [] }),
-      channelIds.length
-        ? query.graph({
-            entity: "sales_channel",
-            fields: ["id", "name"],
-            filters: { id: channelIds },
-          })
-        : Promise.resolve({ data: [] }),
     ]);
 
     const productRows = products.data as ProductRow[];
     const variantRows = variants.data as VariantRow[];
-    const channelRows = channels.data as ChannelRow[];
 
     const productMap = new Map(productRows.map((p) => [p.id, p]));
     const variantMap = new Map(variantRows.map((v) => [v.id, v]));
-    const channelMap = new Map(channelRows.map((c) => [c.id, c]));
 
     const response: WishlistAnalyticsResponse = {
       ...view,
@@ -75,10 +64,6 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
       top_variants: view.top_variants.map((v) => ({
         ...v,
         title: variantMap.get(v.product_variant_id)?.title ?? v.product_variant_id,
-      })),
-      by_sales_channel: view.by_sales_channel.map((c) => ({
-        ...c,
-        name: channelMap.get(c.sales_channel_id)?.name ?? c.sales_channel_id,
       })),
     };
 

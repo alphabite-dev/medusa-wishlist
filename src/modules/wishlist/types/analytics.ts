@@ -29,5 +29,4 @@ export type WishlistAnalyticsView = {
   trend: Array<{ date: string; wishlists: number; items: number }>;
   top_products: Array<{ product_id: string; wishlist_count: number; item_count: number }>;
   top_variants: Array<{ product_variant_id: string; product_id: string; wishlist_count: number }>;
-  by_sales_channel: Array<{ sales_channel_id: string; wishlist_count: number }>;
 };
