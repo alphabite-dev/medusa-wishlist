@@ -1,6 +1,7 @@
 import { Badge, Heading, Select, Table, Text } from "@medusajs/ui";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { sdk } from "../../lib/sdk";
 
 type Delta = { value: number; previous: number; delta_pct: number };
@@ -170,11 +171,6 @@ export const WishlistAnalyticsTab = () => {
         <>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             <KpiCard
-              label="Total wishlists"
-              value={String(data.kpis.total_wishlists.value)}
-              delta={data.kpis.total_wishlists.delta_pct}
-            />
-            <KpiCard
               label="Saved items"
               value={String(data.kpis.total_items.value)}
               delta={data.kpis.total_items.delta_pct}
@@ -257,7 +253,10 @@ export const WishlistAnalyticsTab = () => {
                 {data.top_products.map((p) => (
                   <Table.Row key={p.product_id}>
                     <Table.Cell>
-                      <div className="flex items-center gap-2">
+                      <Link
+                        to={`/products/${p.product_id}`}
+                        className="flex items-center gap-2 hover:underline"
+                      >
                         {p.thumbnail ? (
                           <img
                             src={p.thumbnail}
@@ -267,8 +266,10 @@ export const WishlistAnalyticsTab = () => {
                         ) : (
                           <div className="h-8 w-8 rounded bg-ui-bg-subtle" />
                         )}
-                        <Text size="small">{p.title}</Text>
-                      </div>
+                        <Text size="small" className="text-ui-fg-interactive">
+                          {p.title}
+                        </Text>
+                      </Link>
                     </Table.Cell>
                     <Table.Cell className="text-right">
                       {p.wishlist_count}
@@ -297,7 +298,14 @@ export const WishlistAnalyticsTab = () => {
                 {data.top_variants.map((v) => (
                   <Table.Row key={v.product_variant_id}>
                     <Table.Cell>
-                      <Text size="small">{v.title}</Text>
+                      <Link
+                        to={`/products/${v.product_id}`}
+                        className="hover:underline"
+                      >
+                        <Text size="small" className="text-ui-fg-interactive">
+                          {v.title}
+                        </Text>
+                      </Link>
                     </Table.Cell>
                     <Table.Cell className="text-right">
                       {v.wishlist_count}
