@@ -100,11 +100,7 @@ export const WishlistAnalyticsTab = () => {
   });
 
   const maxTrend = useMemo(
-    () =>
-      Math.max(
-        1,
-        ...(data?.trend.map((t) => Math.max(t.wishlists, t.items)) ?? [1]),
-      ),
+    () => Math.max(1, ...(data?.trend.map((t) => t.items) ?? [1])),
     [data],
   );
 
@@ -197,25 +193,18 @@ export const WishlistAnalyticsTab = () => {
 
           <div className="flex flex-col gap-2 rounded-lg border p-4">
             <Text size="small" weight="plus">
-              Activity over time
+              Items added over time
             </Text>
             <div className="flex h-40 items-end gap-1 overflow-x-auto">
               {data.trend.map((t) => (
                 <div
                   key={t.date}
                   className="flex min-w-[10px] flex-1 flex-col items-center justify-end gap-0.5"
-                  title={`${t.date}: ${t.wishlists} wishlists, ${t.items} items`}
+                  title={`${t.date}: ${t.items} items`}
                 >
-                  <div className="flex h-32 w-full items-end justify-center gap-0.5">
+                  <div className="flex h-32 w-full items-end justify-center">
                     <div
-                      className="w-1/2 rounded-t bg-ui-fg-interactive"
-                      style={{
-                        height: `${(t.wishlists / maxTrend) * 100}%`,
-                        minHeight: t.wishlists > 0 ? "2px" : undefined,
-                      }}
-                    />
-                    <div
-                      className="w-1/2 rounded-t bg-ui-fg-muted"
+                      className="w-full rounded-t bg-ui-fg-interactive"
                       style={{
                         height: `${(t.items / maxTrend) * 100}%`,
                         minHeight: t.items > 0 ? "2px" : undefined,
@@ -227,9 +216,6 @@ export const WishlistAnalyticsTab = () => {
             </div>
             <div className="flex gap-4">
               <Text size="xsmall" className="text-ui-fg-subtle">
-                ▮ Wishlists
-              </Text>
-              <Text size="xsmall" className="text-ui-fg-muted">
                 ▮ Items
               </Text>
             </div>
