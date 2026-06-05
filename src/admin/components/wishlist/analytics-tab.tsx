@@ -35,6 +35,7 @@ type AnalyticsResponse = {
 };
 
 const RANGE_PRESETS: Record<string, number> = {
+  "1": 1,
   "7": 7,
   "30": 30,
   "90": 90,
@@ -121,9 +122,7 @@ export const WishlistAnalyticsTab = () => {
   }
 
   const hasData =
-    data.kpis.total_wishlists.value > 0 ||
-    data.trend.length > 0 ||
-    data.top_products.length > 0;
+    data.kpis.total_wishlists.value > 0 || data.top_products.length > 0;
 
   return (
     <div className="flex flex-col gap-6 px-6 py-6">
@@ -134,6 +133,7 @@ export const WishlistAnalyticsTab = () => {
               <Select.Value />
             </Select.Trigger>
             <Select.Content>
+              <Select.Item value="1">Last 24 hours</Select.Item>
               <Select.Item value="7">Last 7 days</Select.Item>
               <Select.Item value="30">Last 30 days</Select.Item>
               <Select.Item value="90">Last 90 days</Select.Item>
@@ -199,10 +199,10 @@ export const WishlistAnalyticsTab = () => {
               {data.trend.map((t) => (
                 <div
                   key={t.date}
-                  className="flex min-w-[10px] flex-1 flex-col items-center justify-end gap-0.5"
+                  className="flex min-w-[16px] flex-1 flex-col items-center justify-end gap-0.5"
                   title={`${t.date}: ${t.items} items`}
                 >
-                  <div className="flex h-32 w-full items-end justify-center">
+                  <div className="flex h-32 w-full items-end justify-center rounded-t bg-ui-bg-component">
                     <div
                       className="w-full rounded-t bg-ui-fg-interactive"
                       style={{

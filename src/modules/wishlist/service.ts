@@ -22,6 +22,7 @@ import type {
   WishlistAnalyticsView,
   Delta,
 } from "./types/analytics";
+import { pickTrendBucket, trendBuckets, TREND_SQL_FORMAT } from "./trend";
 
 const WISHLIST_SETTINGS_SINGLETON_ID = "wls_singleton";
 
@@ -144,7 +145,7 @@ export default class WishlistModuleService extends MedusaService({
     const prevTo = from;
 
     const channelId = params.sales_channel_id;
-    const bucket = periodMs <= 60 * DAY_MS ? "day" : "week";
+    const bucket = pickTrendBucket(periodMs);
 
     const mkDelta = (value: number, previous: number): Delta => ({
       value,
@@ -230,9 +231,12 @@ export default class WishlistModuleService extends MedusaService({
       .where("created_at", ">=", from)
       .andWhere("created_at", "<", to)
       .select(
-        knex.raw("to_char(date_trunc(?, created_at), 'YYYY-MM-DD') as date", [
-          bucket,
-        ]),
+        // Truncate in UTC so the bucket label doesn't depend on the DB session
+        // timezone (it must match the JS zero-fill in `trendBuckets`).
+        knex.raw(
+          "to_char(date_trunc(?, created_at at time zone 'UTC'), ?) as date",
+          [bucket, TREND_SQL_FORMAT[bucket]],
+        ),
       )
       .count("* as count")
       // Group/order by the SELECT ordinal: repeating date_trunc(?, ...) here
@@ -248,8 +252,8 @@ export default class WishlistModuleService extends MedusaService({
         .andWhere("wi.created_at", "<", to)
         .select(
           knex.raw(
-            "to_char(date_trunc(?, wi.created_at), 'YYYY-MM-DD') as date",
-            [bucket],
+            "to_char(date_trunc(?, wi.created_at at time zone 'UTC'), ?) as date",
+            [bucket, TREND_SQL_FORMAT[bucket]],
           ),
         )
         .count("* as count")
@@ -274,9 +278,11 @@ export default class WishlistModuleService extends MedusaService({
       e.items = n(r.count);
       trendMap.set(r.date, e);
     }
-    const trend = [...trendMap.entries()]
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([date, v]) => ({ date, wishlists: v.wishlists, items: v.items }));
+    // Zero-fill so the chart shows every bucket, not just buckets with activity.
+    const trend = trendBuckets(from, to, bucket).map((date) => {
+      const v = trendMap.get(date);
+      return { date, wishlists: v?.wishlists ?? 0, items: v?.items ?? 0 };
+    });
 
     const topProductsQb = scopeItemsToChannel(
       knex("wishlist_item as wi")
