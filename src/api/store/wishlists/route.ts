@@ -56,6 +56,11 @@ export async function GET(
       ...getPagination(metadata),
     });
   } catch (error) {
+    // Deliberate MedusaErrors (401/403/404/409) are mapped by the framework;
+    // only unexpected failures become a 500.
+    if (error instanceof MedusaError) {
+      throw error;
+    }
     logger.error("Error fetching wishlists:", error);
 
     return res.status(500).end();
@@ -102,6 +107,9 @@ export async function POST(req: AuthenticatedMedusaRequest<CreateWishlistInput>,
 
     return res.status(201).json({ ...wishlist, items_count: 0, items: [] });
   } catch (error) {
+    if (error instanceof MedusaError) {
+      throw error;
+    }
     logger.error("Error creating wishlist:", error);
 
     return res.status(500).end();

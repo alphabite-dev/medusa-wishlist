@@ -66,6 +66,11 @@ export const GET = async (
       ...getPagination(metadata),
     });
   } catch (error) {
+    // Deliberate MedusaErrors (401/403/404/409) are mapped by the framework;
+    // only unexpected failures become a 500.
+    if (error instanceof MedusaError) {
+      throw error;
+    }
     logger.error(`Error fetching wishlist items:${JSON.stringify(error)}`);
 
     return res.status(500).end();

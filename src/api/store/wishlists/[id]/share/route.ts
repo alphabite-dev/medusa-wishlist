@@ -23,6 +23,11 @@ export const POST = async (req: AuthenticatedMedusaRequest, res: MedusaResponse<
       share_token,
     });
   } catch (error) {
+    // Deliberate MedusaErrors (401/403/404/409) are mapped by the framework;
+    // only unexpected failures become a 500.
+    if (error instanceof MedusaError) {
+      throw error;
+    }
     logger.error("Error creating wishlist share token:", error);
 
     return res.status(500).end();

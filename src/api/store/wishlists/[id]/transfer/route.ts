@@ -1,4 +1,5 @@
 import { AuthenticatedMedusaRequest, MedusaResponse } from "@medusajs/framework";
+import { MedusaError } from "@medusajs/framework/utils";
 import WishlistModuleService from "../../../../../modules/wishlist/service";
 import { WISHLIST_MODULE } from "../../../../../modules/wishlist";
 
@@ -68,6 +69,11 @@ export async function POST(req: AuthenticatedMedusaRequest, res: MedusaResponse<
 
     return res.status(200).json({ id });
   } catch (error) {
+    // Deliberate MedusaErrors (401/403/404/409) are mapped by the framework;
+    // only unexpected failures become a 500.
+    if (error instanceof MedusaError) {
+      throw error;
+    }
     logger.error("Transfer wishlists failed:", error);
 
     return res.status(500).end();
