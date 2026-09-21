@@ -107,15 +107,14 @@ export default class WishlistModuleService extends MedusaService({
     productId: string,
     @MedusaContext() context: Context<EntityManager> = {},
   ): Promise<number> {
-    return (
-      (
-        await context.manager
-          ?.createQueryBuilder("wishlist_item", "wi")
-          .select(["wi.wishlist_id"], true)
-          .where("wi.product_id = ?", [productId])
-          .execute()
-      )?.length || 0
-    );
+    const knex = context.manager!.getConnection().getKnex();
+
+    const [row] = await knex("wishlist_item")
+      .where("product_id", productId)
+      .whereNull("deleted_at")
+      .countDistinct<{ c: string }[]>("wishlist_id as c");
+
+    return Number(row?.c ?? 0);
   }
 
   @InjectManager()
