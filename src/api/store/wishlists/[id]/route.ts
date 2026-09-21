@@ -36,11 +36,12 @@ export async function GET(
   const wishlistService =
     req.scope.resolve<WishlistModuleService>(WISHLIST_MODULE);
   const options = wishlistService._options;
+  const settings = await wishlistService.getSettings();
 
-  if (!options.allowGuestWishlist && !customer_id) {
+  if (!settings.allow_guest_wishlist && !customer_id) {
     throw new MedusaError(
       MedusaError.Types.UNAUTHORIZED,
-      "Guest wishlists are now allowed",
+      "Guest wishlists are not allowed",
     );
   }
 
