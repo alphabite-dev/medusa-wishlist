@@ -99,7 +99,9 @@ export default class WishlistModuleService extends MedusaService({
 
   constructor({}, options: AlphabiteWishlistPluginOptionsType) {
     super(...arguments);
-    this._options = options || {};
+    // Parse rather than assign: the schema is what applies the documented
+    // defaults, and validateOptions() only ever inspected its result.
+    this._options = optionsSchema.parse(options ?? {});
   }
 
   @InjectManager()
