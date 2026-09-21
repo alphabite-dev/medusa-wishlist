@@ -78,16 +78,29 @@ export const POST = async (
       );
     }
 
-    const created_item = await wishlistService.createWishlistItems({
-      product_variant_id,
-      product_id: variants[0].product_id,
-      wishlist_id: id,
+    // (product_variant_id, wishlist_id) is unique, so adding a variant that is
+    // already on the list would raise a constraint violation. Adding is
+    // idempotent instead: return the existing item.
+    const { data: existing } = await query.graph({
+      entity: "wishlist_item",
+      filters: { wishlist_id: id, product_variant_id },
+      fields: ["id"],
     });
+
+    const item_id =
+      existing[0]?.id ??
+      (
+        await wishlistService.createWishlistItems({
+          product_variant_id,
+          product_id: variants[0].product_id,
+          wishlist_id: id,
+        })
+      ).id;
 
     const { data: enriched_wishlist_item } = await query.graph({
       entity: "wishlist_item",
       filters: {
-        id: created_item.id,
+        id: item_id,
       },
       ...req.queryConfig,
       fields: [
@@ -96,7 +109,9 @@ export const POST = async (
       ],
     });
 
-    return res.status(201).json(enriched_wishlist_item[0]);
+    return res
+      .status(existing[0] ? 200 : 201)
+      .json(enriched_wishlist_item[0]);
   } catch (error) {
     logger.error(
       `Add item to wishlist failed with error:${JSON.stringify(error)}`,
