@@ -37,11 +37,11 @@ export default defineMiddlewares({
       matcher: "/store/wishlists/total-items-count",
       methods: ["GET"],
       middlewares: [
-        validateAndTransformQuery(TotalItemsCountInputSchema, {}),
         authenticate("customer", ["bearer"], {
           allowUnauthenticated: true,
           allowUnregistered: true,
         }),
+        validateAndTransformQuery(TotalItemsCountInputSchema, {}),
       ],
     },
     //----Retrieve Wishlist-----//
