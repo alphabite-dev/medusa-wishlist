@@ -2,6 +2,7 @@ import { AuthenticatedMedusaRequest, MedusaResponse } from "@medusajs/framework"
 import WishlistModuleService from "../../../../../../modules/wishlist/service";
 import { WISHLIST_MODULE } from "../../../../../../modules/wishlist";
 import { MedusaError } from "@medusajs/framework/utils";
+import { assertWishlistAccess } from "../../../../../../utils/wishlist-access";
 
 //-----Delete item from wishlist-----//
 export interface DeleteWishlistItemOutput {
@@ -30,17 +31,18 @@ export const DELETE = async (req: AuthenticatedMedusaRequest, res: MedusaRespons
       fields: ["id", "customer_id"],
     });
 
-    if (wishlist[0]?.customer_id && !customer_id) {
-      throw new MedusaError(
-        MedusaError.Types.UNAUTHORIZED,
-        "You are not authorized to remove items from this wishlist"
-      );
-    }
+    assertWishlistAccess(wishlist[0], customer_id, "remove items from");
 
-    if (customer_id && wishlist[0]?.customer_id && wishlist[0]?.customer_id !== customer_id) {
+    const { data: items } = await query.graph({
+      entity: "wishlist_item",
+      filters: { id: item_id, wishlist_id },
+      fields: ["id"],
+    });
+
+    if (!items.length) {
       throw new MedusaError(
-        MedusaError.Types.UNAUTHORIZED,
-        "You are not authorized to remove items from this wishlist"
+        MedusaError.Types.NOT_FOUND,
+        `Item with ID ${item_id} not found in wishlist ${wishlist_id}`
       );
     }
 

@@ -1,6 +1,5 @@
 import {
   AuthenticatedMedusaRequest,
-  MedusaRequest,
   MedusaResponse,
 } from "@medusajs/framework";
 import {
@@ -15,6 +14,7 @@ import { Wishlist } from "../types";
 import { WISHLIST_MODULE } from "../../../../modules/wishlist";
 import { RetrieveWishlistQuery } from "./validators";
 import { defaultFields, defaultItemsFields } from "../../../../utils/utils";
+import { assertWishlistAccess } from "../../../../utils/wishlist-access";
 import { WishlistItem } from "../../../../modules/wishlist/models/wishlist-item";
 import {
   CalculatedPriceSet,
@@ -183,13 +183,22 @@ export async function GET(
 }
 
 export async function PUT(
-  req: MedusaRequest<UpdateWishlistInput>,
+  req: AuthenticatedMedusaRequest<UpdateWishlistInput>,
   res: MedusaResponse<Omit<Wishlist, "items" | "items_count">>,
 ) {
   const logger = req.scope.resolve("logger");
 
   const input = req.body;
   const { id } = req.params;
+  const customer_id = req?.auth_context?.actor_id;
+
+  const { data: owner } = await req.scope.resolve("query").graph({
+    entity: "wishlist",
+    filters: { id },
+    fields: ["id", "customer_id"],
+  });
+
+  assertWishlistAccess(owner[0], customer_id, "update");
 
   try {
     const wishlistService =
@@ -217,12 +226,21 @@ export interface DeleteWishlistOutput {
 }
 
 export async function DELETE(
-  req: MedusaRequest,
+  req: AuthenticatedMedusaRequest,
   res: MedusaResponse<DeleteWishlistOutput>,
 ) {
   const logger = req.scope.resolve("logger");
 
   const { id } = req.params;
+  const customer_id = req?.auth_context?.actor_id;
+
+  const { data: owner } = await req.scope.resolve("query").graph({
+    entity: "wishlist",
+    filters: { id },
+    fields: ["id", "customer_id"],
+  });
+
+  assertWishlistAccess(owner[0], customer_id, "delete");
 
   try {
     const wishlistService =

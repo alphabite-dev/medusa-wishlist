@@ -2,6 +2,7 @@ import { AuthenticatedMedusaRequest, MedusaResponse } from "@medusajs/framework"
 import { MedusaError } from "@medusajs/framework/utils";
 import WishlistModuleService from "../../../../../modules/wishlist/service";
 import { WISHLIST_MODULE } from "../../../../../modules/wishlist";
+import { assertWishlistAccess } from "../../../../../utils/wishlist-access";
 
 export const POST = async (req: AuthenticatedMedusaRequest, res: MedusaResponse<{ share_token: string }>) => {
   const logger = req.scope.resolve("logger");
@@ -15,6 +16,14 @@ export const POST = async (req: AuthenticatedMedusaRequest, res: MedusaResponse<
   if (!settings.allow_guest_wishlist && !customer_id) {
     throw new MedusaError(MedusaError.Types.UNAUTHORIZED, "Guest wishlists are not allowed");
   }
+
+  const { data: owner } = await req.scope.resolve("query").graph({
+    entity: "wishlist",
+    filters: { id },
+    fields: ["id", "customer_id"],
+  });
+
+  assertWishlistAccess(owner[0], customer_id, "share");
 
   try {
     const share_token = await wishlistService.createShareToken({ wishlist_id: id });
