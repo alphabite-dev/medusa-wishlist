@@ -1,4 +1,5 @@
 import { AuthenticatedMedusaRequest, MedusaResponse } from "@medusajs/framework";
+import { MedusaError } from "@medusajs/framework/utils";
 import WishlistModuleService from "../../../../modules/wishlist/service";
 import { WISHLIST_MODULE } from "../../../../modules/wishlist";
 import { TotalItemsCountInput } from "./validators";
@@ -36,6 +37,11 @@ export async function GET(
       total_items_count: count,
     });
   } catch (error) {
+    // Deliberate MedusaErrors (401/403/404/409) are mapped by the framework;
+    // only unexpected failures become a 500.
+    if (error instanceof MedusaError) {
+      throw error;
+    }
     logger.error("Error fetching wishlists:", error);
 
     return res.status(500).end();

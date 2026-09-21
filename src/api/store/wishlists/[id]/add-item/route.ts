@@ -98,6 +98,11 @@ export const POST = async (
 
     return res.status(201).json(enriched_wishlist_item[0]);
   } catch (error) {
+    // Deliberate MedusaErrors (401/403/404/409) are mapped by the framework;
+    // only unexpected failures become a 500.
+    if (error instanceof MedusaError) {
+      throw error;
+    }
     logger.error(
       `Add item to wishlist failed with error:${JSON.stringify(error)}`,
     );

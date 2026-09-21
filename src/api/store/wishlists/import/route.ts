@@ -102,6 +102,11 @@ export const POST = async (req: AuthenticatedMedusaRequest<{ share_token: string
 
     return res.status(200).json({ ...created_wishlist, items: wishlist_items });
   } catch (error) {
+    // Deliberate MedusaErrors (401/403/404/409) are mapped by the framework;
+    // only unexpected failures become a 500.
+    if (error instanceof MedusaError) {
+      throw error;
+    }
     logger.error("Error importing wishlist:", error);
     return res.status(500).end();
   }

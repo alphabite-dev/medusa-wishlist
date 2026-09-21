@@ -185,6 +185,11 @@ export async function GET(
       items: enrichedItems,
     });
   } catch (error) {
+    // Deliberate MedusaErrors (401/403/404/409) are mapped by the framework;
+    // only unexpected failures become a 500.
+    if (error instanceof MedusaError) {
+      throw error;
+    }
     logger.error(
       "Error fetching wishlists:",
       error instanceof Error ? error : new Error(String(error)),
@@ -223,6 +228,9 @@ export async function PUT(
 
     return res.status(200).json(updated_wishlist);
   } catch (error) {
+    if (error instanceof MedusaError) {
+      throw error;
+    }
     logger.error(
       "Update wishlists failed:",
       error instanceof Error ? error : new Error(String(error)),
@@ -264,6 +272,9 @@ export async function DELETE(
       id,
     });
   } catch (error) {
+    if (error instanceof MedusaError) {
+      throw error;
+    }
     logger.error(
       "Wishlist deleting failed.",
       error instanceof Error ? error : new Error(String(error)),
