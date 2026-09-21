@@ -30,8 +30,13 @@ export async function GET(
 
   const { id } = req.params;
   const customer_id = req?.auth_context?.actor_id;
-  const { items_fields, include_calculated_price, include_inventory_count } =
-    req.validatedQuery;
+  const {
+    items_fields,
+    include_calculated_price,
+    include_inventory_count,
+    region_id,
+    currency_code,
+  } = req.validatedQuery;
 
   const wishlistService =
     req.scope.resolve<WishlistModuleService>(WISHLIST_MODULE);
@@ -41,6 +46,13 @@ export async function GET(
     throw new MedusaError(
       MedusaError.Types.UNAUTHORIZED,
       "Guest wishlists are now allowed",
+    );
+  }
+
+  if (include_calculated_price && !region_id && !currency_code) {
+    throw new MedusaError(
+      MedusaError.Types.INVALID_DATA,
+      "include_calculated_price requires region_id or currency_code",
     );
   }
 
@@ -117,8 +129,8 @@ export async function GET(
           context: {
             variants: {
               calculated_price: QueryContext({
-                region_id: "reg_01J3MRPDNXXXDSCC76Y6YCZARS",
-                currency_code: "eur",
+                ...(region_id && { region_id }),
+                ...(currency_code && { currency_code }),
               }),
             },
           },
