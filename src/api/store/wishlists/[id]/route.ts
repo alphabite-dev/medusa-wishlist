@@ -101,35 +101,36 @@ export async function GET(
 
     let variantsPrices: Record<string, CalculatedPriceSet> = {};
 
-    if (include_calculated_price) {
-      for (const item of items as (WishlistItem & {
-        product_variant: ProductVariantDTO;
-      })[]) {
-        const { data: products } = await query.graph({
-          entity: "product",
-          fields: ["id", "variants.id", "variants.calculated_price.*"],
-          // narrow to a product that contains your variant
-          filters: {
-            variants: {
-              id: item.product_variant_id,
-            },
-          },
-          context: {
-            variants: {
-              calculated_price: QueryContext({
-                region_id: "reg_01J3MRPDNXXXDSCC76Y6YCZARS",
-                currency_code: "eur",
-              }),
-            },
-          },
-        });
+    const variantIds = (items as WishlistItem[]).map(
+      (item) => item.product_variant_id,
+    );
 
-        products.map((product) => {
-          product.variants.map((variant: any) => {
-            variantsPrices[variant.id] = variant.calculated_price;
-          });
+    if (include_calculated_price && variantIds.length) {
+      // One lookup for every variant on the page, not one per item.
+      const { data: products } = await query.graph({
+        entity: "product",
+        fields: ["id", "variants.id", "variants.calculated_price.*"],
+        // narrow to the products that contain your variants
+        filters: {
+          variants: {
+            id: variantIds,
+          },
+        },
+        context: {
+          variants: {
+            calculated_price: QueryContext({
+              region_id: "reg_01J3MRPDNXXXDSCC76Y6YCZARS",
+              currency_code: "eur",
+            }),
+          },
+        },
+      });
+
+      products.map((product) => {
+        product.variants.map((variant: any) => {
+          variantsPrices[variant.id] = variant.calculated_price;
         });
-      }
+      });
     }
 
     const enrichedItems = items.map(
