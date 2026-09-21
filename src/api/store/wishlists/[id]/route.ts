@@ -36,6 +36,8 @@ export async function GET(
     include_inventory_count,
     region_id,
     currency_code,
+    items_limit,
+    items_offset,
   } = req.validatedQuery;
 
   const wishlistService =
@@ -98,8 +100,8 @@ export async function GET(
         ...(items_fields || []),
       ],
       pagination: {
-        take: options?.includeWishlistItemsTake || 5,
-        skip: 0,
+        take: items_limit ?? options?.includeWishlistItemsTake ?? 5,
+        skip: items_offset ?? 0,
       },
     });
 
@@ -157,16 +159,6 @@ export async function GET(
         const availability =
           variantsAvailability[item.product_variant_id]?.availability;
         const calculated_price = variantsPrices[item.product_variant_id];
-
-        let enrichedItem = { ...item };
-
-        if (include_inventory_count) {
-          enrichedItem.product_variant.availability = availability || null;
-        }
-
-        if (include_calculated_price) {
-          item.product_variant.calculated_price = calculated_price || null;
-        }
 
         return {
           ...item,

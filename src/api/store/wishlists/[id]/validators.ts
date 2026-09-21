@@ -6,6 +6,8 @@ export const RetrieveWishlistQuerySchema = z.object({
   include_calculated_price: z.coerce.boolean().optional(),
   region_id: z.string().optional(),
   currency_code: z.string().optional(),
+  items_limit: z.coerce.number().int().positive().optional(),
+  items_offset: z.coerce.number().int().nonnegative().optional(),
 });
 
 export type RetrieveWishlistQuery = z.infer<typeof RetrieveWishlistQuerySchema>;
