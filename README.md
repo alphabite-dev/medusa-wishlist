@@ -201,7 +201,7 @@ After that, the cookie is no longer needed.
 You’ll find the ready-to-import Postman collection at:
 
 ```
-docs/postman/WishlistPlugin.postman_collection.json
+alphabite-wishlist-postman.json
 ```
 
 Use it to explore and test all endpoints interactively.

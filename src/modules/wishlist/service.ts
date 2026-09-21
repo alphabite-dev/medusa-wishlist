@@ -384,9 +384,7 @@ export default class WishlistModuleService extends MedusaService({
     return shareToken;
   }
 
-  async validateToken(
-    shareToken: string,
-  ): Promise<{ wishlist_id: string } | null> {
+  async validateToken(shareToken: string): Promise<{ wishlist_id: string }> {
     const decoded = jwt.verify(shareToken, this._options.shareTokenSecret);
 
     return decoded as { wishlist_id: string };
