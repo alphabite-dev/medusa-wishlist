@@ -1,6 +1,7 @@
 import { AuthenticatedMedusaRequest, MedusaResponse } from "@medusajs/framework";
 import WishlistModuleService from "../../../../../modules/wishlist/service";
 import { WISHLIST_MODULE } from "../../../../../modules/wishlist";
+import { assertWishlistAccess } from "../../../../../utils/wishlist-access";
 
 //-----Transfer wishlists to a specific customer-----//
 export interface TransferWishlistOutput {
@@ -12,6 +13,14 @@ export async function POST(req: AuthenticatedMedusaRequest, res: MedusaResponse<
 
   const customer_id = req.auth_context.actor_id;
   const { id } = req.params;
+
+  const { data: owner } = await req.scope.resolve("query").graph({
+    entity: "wishlist",
+    filters: { id },
+    fields: ["id", "customer_id"],
+  });
+
+  assertWishlistAccess(owner[0], customer_id, "transfer");
 
   try {
     const wishlistService = req.scope.resolve<WishlistModuleService>(WISHLIST_MODULE);
