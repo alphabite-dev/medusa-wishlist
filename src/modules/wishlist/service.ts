@@ -469,10 +469,26 @@ export default class WishlistModuleService extends MedusaService({
       return this.getSettings();
     }
 
-    await this.updateWishlistSettings({
-      id: WISHLIST_SETTINGS_SINGLETON_ID,
-      ...writePatch,
-    });
+    const [row] = await this.listWishlistSettings(
+      { id: WISHLIST_SETTINGS_SINGLETON_ID },
+      { take: 1 },
+    );
+
+    if (row) {
+      await this.updateWishlistSettings({
+        id: WISHLIST_SETTINGS_SINGLETON_ID,
+        ...writePatch,
+      });
+    } else {
+      // No row means the plugin options are still supplying the values, so
+      // persist those alongside the patch rather than the column defaults.
+      const current = await this.getSettings();
+      await this.createWishlistSettings({
+        id: WISHLIST_SETTINGS_SINGLETON_ID,
+        ...current,
+        ...writePatch,
+      });
+    }
 
     return this.getSettings();
   }
