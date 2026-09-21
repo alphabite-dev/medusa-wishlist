@@ -20,6 +20,8 @@ Please install the plugin version that matches your Medusa version:
 | `2.13.*`           | `0.5.8`        | `npm install @alphabite/medusa-wishlist@0.5.8` |
 | Below `2.13.0`     | `0.5.7`        | `npm install @alphabite/medusa-wishlist@0.5.7` |
 
+`latest` is built and tested against Medusa `2.21.0`.
+
 ### Installing the latest version (Medusa 2.14.\* and above)
 
 ```bash
@@ -191,8 +193,10 @@ After that, the cookie is no longer needed.
 
 ## 🧩 Requirements
 
-- Medusa v2.5.0+
+- Medusa v2.14.0+
 - Works with both `@medusajs/types` and `@medusajs/framework`
+
+`@mikro-orm/*`, `awilix` and `pg` are provided by Medusa and don't need to be installed alongside the plugin.
 
 ---
 
