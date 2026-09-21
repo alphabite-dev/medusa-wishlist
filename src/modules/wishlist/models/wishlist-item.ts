@@ -16,6 +16,9 @@ export const WishlistItem = model
       on: ["product_variant_id", "wishlist_id"],
       unique: true,
     },
+    {
+      on: ["product_id"],
+    },
   ]);
 
 export type WishlistItem = InferTypeOf<typeof WishlistItem>;
