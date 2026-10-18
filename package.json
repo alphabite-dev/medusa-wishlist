@@ -98,5 +98,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "dependencies": {}
+  "dependencies": {
+    "jsonwebtoken": "^9.0.2"
+  }
 }
