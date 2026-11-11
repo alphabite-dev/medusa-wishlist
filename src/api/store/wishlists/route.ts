@@ -99,9 +99,34 @@ export async function POST(req: AuthenticatedMedusaRequest<CreateWishlistInput>,
     }
   }
 
+  // Mirror Medusa's cart behaviour: an explicit sales channel must belong to
+  // the publishable key, and an omitted one is taken from the key when it is
+  // unambiguous.
+  const keySalesChannelIds = req.publishable_key_context?.sales_channel_ids ?? [];
+  let sales_channel_id = input.sales_channel_id;
+
+  if (sales_channel_id) {
+    if (keySalesChannelIds.length && !keySalesChannelIds.includes(sales_channel_id)) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        `Sales channel ID ${sales_channel_id} is not associated with the publishable API key`
+      );
+    }
+  } else if (keySalesChannelIds.length === 1) {
+    sales_channel_id = keySalesChannelIds[0];
+  } else {
+    throw new MedusaError(
+      MedusaError.Types.INVALID_DATA,
+      keySalesChannelIds.length
+        ? "The publishable API key has multiple sales channels. Please provide sales_channel_id in the request body."
+        : "The publishable API key has no sales channel configured. Please provide sales_channel_id in the request body."
+    );
+  }
+
   try {
     const wishlist = await wishlistService.createWishlists({
       ...input,
+      sales_channel_id,
       ...(customer_id && { customer_id }),
     });
 

@@ -2,7 +2,8 @@ import { z } from "@medusajs/framework/zod";
 
 export const CreateWishlistInputSchema = z.object({
   name: z.string().optional(),
-  sales_channel_id: z.string(),
+  // Optional: resolved from the publishable API key when omitted.
+  sales_channel_id: z.string().optional(),
 });
 
 export type CreateWishlistInput = z.infer<typeof CreateWishlistInputSchema>;
