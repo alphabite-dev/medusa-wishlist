@@ -244,6 +244,7 @@
             "id"
           ],
           "referencedTableName": "public.wishlist",
+          "deleteRule": "cascade",
           "updateRule": "cascade"
         }
       },
