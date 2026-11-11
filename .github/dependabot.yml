@@ -1,0 +1,12 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    groups:
+      # Medusa packages are released in lockstep and must stay on matching
+      # versions, so bump them together in a single PR.
+      medusajs:
+        patterns:
+          - "@medusajs/*"
