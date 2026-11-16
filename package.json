@@ -69,7 +69,7 @@
     "@mikro-orm/postgresql": "6.6.14",
     "@swc/core": "1.5.7",
     "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^20.0.0",
+    "@types/node": "^26.6.6",
     "@types/react": "^18.3.2",
     "@types/react-dom": "^18.2.25",
     "awilix": "^8.0.1",
