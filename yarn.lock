@@ -2332,6 +2332,19 @@
     mikro-orm "6.6.14"
     reflect-metadata "0.2.2"
 
+"@mikro-orm/core@6.6.18":
+  version "6.6.18"
+  resolved "https://registry.yarnpkg.com/@mikro-orm/core/-/core-6.6.18.tgz#941d84028a900283c2a1b2a1ecb410a093120582"
+  integrity sha512-UXev/R574jun5k0kcOl5Vy5Gp+IJntLEJ6WAp75o+ovW6Vq38jGaz5OAYgXV0vV06TZf2Udxgg72bHYnZDbcRg==
+  dependencies:
+    dataloader "2.2.3"
+    dotenv "17.3.1"
+    esprima "4.0.1"
+    fs-extra "11.3.3"
+    globby "11.1.0"
+    mikro-orm "6.6.18"
+    reflect-metadata "0.2.2"
+
 "@mikro-orm/knex@6.6.14":
   version "6.6.14"
   resolved "https://registry.yarnpkg.com/@mikro-orm/knex/-/knex-6.6.14.tgz#12c5191d599e44647cdfa98b31adf6ddf8219894"
@@ -6889,6 +6902,11 @@ mikro-orm@6.6.14:
   version "6.6.14"
   resolved "https://registry.yarnpkg.com/mikro-orm/-/mikro-orm-6.6.14.tgz#84f0692fd9362a31084646925522c0fbdb65032f"
   integrity sha512-SRVEqIrANwlVwZxJUoSXHgpzGgSpaoOiG7XrnYlh7TYehbJRbxE3xIhJNdNw0t7FIItixFUvLnD6A20bvLnUNw==
+
+mikro-orm@6.6.18:
+  version "6.6.18"
+  resolved "https://registry.yarnpkg.com/mikro-orm/-/mikro-orm-6.6.18.tgz#a051db5a42ea87a0df82a5fe53f85a1ddbca8baa"
+  integrity sha512-cjBN6HpspFC2N3Myj6jqBPMwYE73lgFl1/C9dzX7lWeZ1sy4pkX/mjHZkxnAhqVdGW3fVp/u5Dj4JkmYmqiGsQ==
 
 mime-db@1.52.0:
   version "1.52.0"
