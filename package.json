@@ -63,7 +63,7 @@
     "@medusajs/test-utils": "2.21.0",
     "@medusajs/ui": "4.2.4",
     "@mikro-orm/cli": "6.6.14",
-    "@mikro-orm/core": "6.6.14",
+    "@mikro-orm/core": "6.6.18",
     "@mikro-orm/knex": "6.6.14",
     "@mikro-orm/migrations": "6.6.14",
     "@mikro-orm/postgresql": "6.6.14",
